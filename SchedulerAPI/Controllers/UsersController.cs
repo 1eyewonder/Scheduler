@@ -5,17 +5,20 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthenticationPlugin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SchedulerAPI.Data;
+using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
 
 namespace SchedulerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
 
@@ -89,17 +92,18 @@ namespace SchedulerAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult Register([FromBody]User user)
+        [AllowAnonymous]
+        public IActionResult Register([FromBody]UserDto userDto)
         {
             //Ensures unique email
-            var userWithSameEmail = _context.Users.Where(u => u.Email == user.Email).SingleOrDefault();
+            var userWithSameEmail = _context.Users.Where(u => u.Email == userDto.Email).SingleOrDefault();
             if (userWithSameEmail != null)
             {
                 return BadRequest("User with same email already exists");
             }
 
             //Ensures unique name
-            var userWithSameName = _context.Users.Where(u => u.Name == user.Name).SingleOrDefault();
+            var userWithSameName = _context.Users.Where(u => u.Name == userDto.Name).SingleOrDefault();
             if (userWithSameName != null)
             {
                 return BadRequest("User with the same name already exists");
@@ -107,10 +111,10 @@ namespace SchedulerAPI.Controllers
 
             var userObj = new User
             {
-                Name = user.Name,
-                Email = user.Email,
-                Password = SecurePasswordHasherHelper.Hash(user.Password),
-                RoleId = 0, //defaults to new user
+                Name = userDto.Name,
+                Email = userDto.Email,
+                Password = SecurePasswordHasherHelper.Hash(userDto.Password),
+                RoleId = 1, //defaults to new user
             };
 
             _context.Users.Add(userObj);
@@ -119,7 +123,8 @@ namespace SchedulerAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult Login([FromBody]User user)
+        [AllowAnonymous]
+        public IActionResult Login([FromBody]UserLoginDto user)
         {
             var userEmail = _context.Users.Include(r=>r.Role).FirstOrDefault(u => u.Email == user.Email);
 
