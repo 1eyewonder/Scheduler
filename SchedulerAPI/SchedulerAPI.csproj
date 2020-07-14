@@ -5,6 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200713152512_Initial.cs" />
+    <Compile Remove="Migrations\20200713152512_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200713164451_ForeignKeysForQuoteAndJobRevision.cs" />
+    <Compile Remove="Migrations\20200713164451_ForeignKeysForQuoteAndJobRevision.Designer.cs" />
+    <Compile Remove="Migrations\20200714160254_RemovedFKFromRevisions.cs" />
+    <Compile Remove="Migrations\20200714160254_RemovedFKFromRevisions.Designer.cs" />
+    <Compile Remove="Migrations\20200714160613_SwappedJobAndRevisionsForeignKey.cs" />
+    <Compile Remove="Migrations\20200714160613_SwappedJobAndRevisionsForeignKey.Designer.cs" />
+    <Compile Remove="Migrations\20200714160728_SwappedJobAndRevisionsForeignKey.cs" />
+    <Compile Remove="Migrations\20200714160728_SwappedJobAndRevisionsForeignKey.Designer.cs" />
+    <Compile Remove="Migrations\20200714161035_SwappedJobAndRevisionsForeignKey.cs" />
+    <Compile Remove="Migrations\20200714161035_SwappedJobAndRevisionsForeignKey.Designer.cs" />
+    <Compile Remove="Migrations\20200714161529_DroppedRevisionsPrimaryKey.cs" />
+    <Compile Remove="Migrations\20200714161529_DroppedRevisionsPrimaryKey.Designer.cs" />
+    <Compile Remove="Migrations\20200714161648_SwappedJobAndRevisionsForeignKeys.cs" />
+    <Compile Remove="Migrations\20200714161648_SwappedJobAndRevisionsForeignKeys.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.Authentication.Plugin" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
@@ -17,6 +36,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

@@ -9,8 +9,8 @@ using SchedulerAPI.Data;
 namespace SchedulerAPI.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    [Migration("20200707164521_UpdatedUserRole")]
-    partial class UpdatedUserRole
+    [Migration("20200713163757_RemovedFKFromJob")]
+    partial class RemovedFKFromJob
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,13 +31,17 @@ namespace SchedulerAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("JobNumber")
-                        .HasColumnType("nvarchar(12)")
-                        .HasMaxLength(12);
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
+
+                    b.Property<string>("ProjectNumber")
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
 
                     b.Property<string>("QuoteNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(12)")
-                        .HasMaxLength(12);
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
 
                     b.HasKey("Id");
 
@@ -51,15 +55,12 @@ namespace SchedulerAPI.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("SchedulerAPI.Models.QuoteRevision", b =>
+            modelBuilder.Entity("SchedulerAPI.Models.JobRevision", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("JobId")
-                        .HasColumnType("int");
 
                     b.Property<int>("RevisionNumber")
                         .HasColumnType("int");
@@ -70,7 +71,24 @@ namespace SchedulerAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("JobId");
+                    b.ToTable("JobRevisions");
+                });
+
+            modelBuilder.Entity("SchedulerAPI.Models.QuoteRevision", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RevisionSummary")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
 
                     b.ToTable("QuoteRevisions");
                 });
@@ -122,15 +140,6 @@ namespace SchedulerAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("SchedulerAPI.Models.QuoteRevision", b =>
-                {
-                    b.HasOne("SchedulerAPI.Models.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("SchedulerAPI.Models.User", b =>

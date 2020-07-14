@@ -36,6 +36,7 @@ namespace SchedulerAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "1,2")]
         public IActionResult Get()
         {
             var users = _context.Users.Include(r=>r.Role);
@@ -53,6 +54,7 @@ namespace SchedulerAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "1,2")]
         public IActionResult Get(int id)
         {
             var user = _context.Users.Include(r=>r.Role).Single(i=>i.Id == id);
@@ -63,6 +65,7 @@ namespace SchedulerAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "1,2")]
         public IActionResult Put(int id, [FromBody] User user)
         {
             //If model state does not match
@@ -142,7 +145,7 @@ namespace SchedulerAPI.Controllers
             {
                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                new Claim(ClaimTypes.Email, user.Email),
-               new Claim(ClaimTypes.Role, userEmail.Role.AuthorizationLevel.ToString())
+               new Claim(ClaimTypes.Role, userEmail.Role.AuthorizationLevel.ToString()) //property where role data annotation is set
              };
 
             var token = _auth.GenerateAccessToken(claims);
@@ -158,6 +161,25 @@ namespace SchedulerAPI.Controllers
             });
         }
 
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "2")]
+        public IActionResult Delete(int id)
+        {
+            //If model state does not match
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            var user = _context.Users.Find(id);
+
+            if (user == null) return BadRequest("There is no record of this id");
+
+            //Remove entry and save changes
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+
+            return Ok("Role successfully deleted");
+        }
     }
 }

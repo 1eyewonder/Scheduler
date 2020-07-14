@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace SchedulerAPI.Models
 {
-    public class QuoteRevision
+    public class JobRevision
     {
         [Required]
         public int Id { get; set; }
 
         /// <summary>
-        /// Revision number of the quote
+        /// Revision number of the job
         /// </summary>
         [Required(ErrorMessage ="RevisionNumber cannot be null")]
         public int RevisionNumber { get; set; }
