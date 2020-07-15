@@ -9,7 +9,11 @@ namespace SchedulerUI.Services.Interfaces
 {
     interface IUserService
     {
+        bool IsLoggedIn { get; set; }
         Task<HttpResponseMessage> Login(UserLoginDto userLogin);
         Task<HttpResponseMessage> Register(UserDto user);
+        Task LogOut(UserLoginDto userLogin);
+        Task SetAuthorizationHeader();
+        Task<bool> MinimumAuthRequired(int authLevel);
     }
 }

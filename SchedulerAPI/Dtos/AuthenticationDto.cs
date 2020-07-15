@@ -17,6 +17,8 @@ namespace SchedulerAPI.Dtos
 
         public int? ExpirationTime { get; set; }
 
+        public int AuthorizationLevel { get; set; }
+
         public int UserId { get; set; }
 
     }

@@ -157,6 +157,7 @@ namespace SchedulerAPI.Controllers
                 TokenType = token.TokenType,
                 CreationTime = token.ValidFrom,
                 ExpirationTime = token.ValidTo,
+                AuthorizationLevel = userEmail.Role.AuthorizationLevel,
                 UserId = userEmail.Id
             });
         }

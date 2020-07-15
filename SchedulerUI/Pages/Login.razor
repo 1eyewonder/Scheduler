@@ -1,4 +1,4 @@
-﻿@page "/Login"
+﻿@page "/login"
 
 @using SchedulerUI.Services.Interfaces
 @using SchedulerAPI.Dtos
@@ -6,22 +6,29 @@
 @using Blazored.LocalStorage
 
 @inject IUserService userService
-@inject ILocalStorageService storageService
+@inject NavigationManager NavigationManager
 
-<h3>Login</h3>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Please enter your details</h5>
+            <EditForm Model="userLogin" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-<EditForm Model="@userLogin" OnValidSubmit="@UserLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-
-    <InputText id="email" @bind-Value="userLogin.Email" />
-    <InputText id="password" @bind-Value="userLogin.Password" />
-
-    <button type="submit" class="btn btn-primary">Submit</button>
-
-</EditForm>
-<h4>@message</h4>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <InputText Id="email" Class="form-control" @bind-Value="userLogin.Email" />
+                    <ValidationMessage For="@(() => userLogin.Email)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <InputText Id="password" type="password" Class="form-control" @bind-Value="userLogin.Password" />
+                    <ValidationMessage For="@(() => userLogin.Password)" />
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </div>
 
 @code {
     bool isBusy = false;
@@ -29,20 +36,13 @@
 
     private UserLoginDto userLogin = new UserLoginDto();
 
-    private async Task UserLogin()
+    private async Task HandleLogin()
     {
         var result = await userService.Login(userLogin);
 
         if (result.IsSuccessStatusCode)
         {
-            message = "Login Successful";
-            var userInfo = JsonConvert.DeserializeObject<AuthenticationDto>(result.Content.ReadAsStringAsync().Result);
-
-            await storageService.SetItemAsync("User", userInfo);
-        }
-        else
-        {
-            message = result.StatusCode.ToString();
+            NavigationManager.NavigateTo("/");
         }
     }
 }

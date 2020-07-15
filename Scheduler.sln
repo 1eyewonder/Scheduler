@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchedulerAPI", "SchedulerAPI\SchedulerAPI.csproj", "{2B748F12-3805-4BCC-B3B2-D85920A43C11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchedulerUI", "SchedulerUI\SchedulerUI.csproj", "{18E91AEA-7B45-47CF-9523-569212272F28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchedulerUI", "SchedulerUI\SchedulerUI.csproj", "{18E91AEA-7B45-47CF-9523-569212272F28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

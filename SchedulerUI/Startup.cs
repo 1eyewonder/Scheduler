@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,11 +32,6 @@ namespace SchedulerUI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
-            services.AddBlazoredLocalStorage();
-            services.AddSingleton<WeatherForecastService>();
-
             string address;
 #if DEBUG
             address = "https://localhost:44326/api/";
@@ -46,6 +43,16 @@ namespace SchedulerUI
             {
                 client.BaseAddress = new Uri(address);
             });
+
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
+            services.AddBlazoredLocalStorage();
+            services.AddAuthenticationCore();
+            services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+            //services.AddScoped<IUserService, UserService>();
+            services.AddSingleton<WeatherForecastService>();
+
+
             
             
         }
