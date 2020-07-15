@@ -1,0 +1,48 @@
+﻿@page "/Login"
+
+@using SchedulerUI.Services.Interfaces
+@using SchedulerAPI.Dtos
+@using Newtonsoft.Json;
+@using Blazored.LocalStorage
+
+@inject IUserService userService
+@inject ILocalStorageService storageService
+
+<h3>Login</h3>
+
+<EditForm Model="@userLogin" OnValidSubmit="@UserLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+
+    <InputText id="email" @bind-Value="userLogin.Email" />
+    <InputText id="password" @bind-Value="userLogin.Password" />
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+</EditForm>
+<h4>@message</h4>
+
+@code {
+    bool isBusy = false;
+    string message = string.Empty;
+
+    private UserLoginDto userLogin = new UserLoginDto();
+
+    private async Task UserLogin()
+    {
+        var result = await userService.Login(userLogin);
+
+        if (result.IsSuccessStatusCode)
+        {
+            message = "Login Successful";
+            var userInfo = JsonConvert.DeserializeObject<AuthenticationDto>(result.Content.ReadAsStringAsync().Result);
+
+            await storageService.SetItemAsync("User", userInfo);
+        }
+        else
+        {
+            message = result.StatusCode.ToString();
+        }
+    }
+}

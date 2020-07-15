@@ -150,14 +150,14 @@ namespace SchedulerAPI.Controllers
 
             var token = _auth.GenerateAccessToken(claims);
 
-            return new ObjectResult(new
+            return new ObjectResult(new AuthenticationDto()
             {
-                access_token = token.AccessToken,
-                expires_in = token.ExpiresIn,
-                token_type = token.TokenType,
-                creation_Time = token.ValidFrom,
-                expiration_Time = token.ValidTo,
-                userId = userEmail.Id
+                AccessToken = token.AccessToken,
+                ExpiresIn = token.ExpiresIn,
+                TokenType = token.TokenType,
+                CreationTime = token.ValidFrom,
+                ExpirationTime = token.ValidTo,
+                UserId = userEmail.Id
             });
         }
 

@@ -36,7 +36,7 @@ namespace SchedulerAPI
              services.AddDbContext<SchedulerContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("sqlConnection")));
 #endif
 
-            services.AddMvc().AddXmlSerializerFormatters();
+            //services.AddMvc().AddXmlSerializerFormatters();
             services.AddControllers().AddNewtonsoftJson();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
