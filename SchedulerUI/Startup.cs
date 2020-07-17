@@ -33,6 +33,7 @@ namespace SchedulerUI
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+            services.AddScoped<IJobService, JobService>();
 
             services.AddSingleton<HttpClient>();
         }

@@ -1,0 +1,55 @@
+﻿@page "/jobs"
+
+@using SchedulerAPI.Models
+ 
+@inject IUserService UserService
+@inject IJobService JobService
+
+<h1>Jobs</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (JobList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Quote Number</th>
+                <th>Job Number</th>
+                <th>Project Number</th>
+                <th>Is A Job</th>
+                <AuthorizeView Roles="1,2">
+                    <th>Edit Job</th>
+                </AuthorizeView>
+                <AuthorizeView Roles="2">
+                    <th>Delete Job</th>
+                </AuthorizeView>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var job in JobList)
+            {
+            <tr>
+                <td>@job.QuoteNumber</td>
+                <td>@job.JobNumber</td>
+                <td>@job.ProjectNumber</td>
+                <td>@job.IsAJob</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Job> JobList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        JobList = await JobService.GetJobs(); 
+    }
+}

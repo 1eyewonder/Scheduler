@@ -47,85 +47,14 @@ namespace SchedulerAPI.Controllers
         /// <returns></returns>
         [HttpGet("[action]")]
         [AllowAnonymous]
-        public IActionResult AllJobs(string sort = null, int pageNumber = 5, int pageSize = 20, bool onlyJobs = false)
+        public IActionResult GetJobs()
         {
             var jobs = _context.Jobs;
 
             //If successfull request
             if (jobs != null)
             {
-                //Returns only quotes
-                if (onlyJobs == true)
-                {
-                    //Orders based on job number
-                    return sort switch
-                    {
-                        "desc" => Ok(jobs.OrderByDescending(j => j.JobNumber).Where(x => x.JobNumber != null).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        "asc" => Ok(jobs.OrderBy(j => j.JobNumber).Where(x => x.JobNumber != null).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        _ => Ok(jobs.Where(x => x.JobNumber != null).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                    };
-                }
-
-                //Returns all entries
-                else
-                {
-                    //Orders based on job number
-                    return sort switch
-                    {
-                        "desc" => Ok(jobs.OrderByDescending(j => j.JobNumber).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        "asc" => Ok(jobs.OrderBy(j => j.JobNumber).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        _ => Ok(jobs.Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                    };
-                }
-            }
-
-            //Could not connect to data context
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        /// <summary>
-        /// Returns entries in Jobs table
-        /// </summary>
-        /// <param name="sort">Sorts by job number: "asc" for ascending and "desc" for descending</param>
-        /// <param name="pageNumber">Number of pages data is split into</param>
-        /// <param name="pageSize">Data request size per page</param>
-        /// <param name="onlyJobs">True to show only quotes</param>
-        /// <returns></returns>
-        [HttpGet("[action]")]
-        [AllowAnonymous]
-        public IActionResult AllQuotes(string sort = null, int pageNumber = 5, int pageSize = 20, bool onlyJobs = false)
-        {
-            var jobs = _context.Jobs;
-
-            //If successfull request
-            if (jobs != null)
-            {
-                //Returns only quotes
-                if (onlyJobs == true)
-                {
-                    //Orders based on quote number
-                    return sort switch
-                    {
-                        "desc" => Ok(jobs.OrderByDescending(j => j.QuoteNumber).Where(x => x.QuoteNumber != null).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        "asc" => Ok(jobs.OrderBy(j => j.QuoteNumber).Where(x => x.QuoteNumber != null).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        _ => Ok(jobs.Where(x => x.QuoteNumber != null).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                    };
-                }
-
-                //Returns all entries
-                else
-                {
-                    //Orders based on quote number
-                    return sort switch
-                    {
-                        "desc" => Ok(jobs.OrderByDescending(j => j.QuoteNumber).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        "asc" => Ok(jobs.OrderBy(j => j.QuoteNumber).Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                        _ => Ok(jobs.Skip((pageNumber - 1) * pageSize).Take(pageSize)),
-                    };
-                }
+                return Ok(jobs);
             }
 
             //Could not connect to data context

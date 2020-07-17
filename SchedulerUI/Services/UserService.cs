@@ -34,8 +34,8 @@ namespace SchedulerUI.Services
             //Sends user info to api and awaits response
             var json = JsonConvert.SerializeObject(userLogin);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("users/login", data);
 
+            var response = await _httpClient.PostAsync("users/login", data);
             if (response.IsSuccessStatusCode)
             {
                 //Gets authentication information back from api
@@ -45,7 +45,7 @@ namespace SchedulerUI.Services
                 await _storageService.SetItemAsync("User", userInfo);
                 IsLoggedIn = true;
 
-                ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(userLogin.Email);
+                await ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(userLogin.Email);
                 await SetAuthorizationHeader();
                 return response;
             }

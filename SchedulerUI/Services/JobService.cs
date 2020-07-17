@@ -1,8 +1,9 @@
-﻿using SchedulerAPI.Dtos;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+using Newtonsoft.Json;
+using SchedulerAPI.Models;
 using SchedulerUI.Services.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -10,39 +11,32 @@ namespace SchedulerUI.Services
 {
     public class JobService : IJobService
     {
-        public Task<HttpResponseMessage> AddJob(JobDto job)
+        private readonly HttpClient _httpClient;
+        private readonly ILocalStorageService _storageService;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+
+        public JobService(HttpClient httpClient,
+            ILocalStorageService storageService,
+            AuthenticationStateProvider authenticationStateProvider)
         {
-            throw new NotImplementedException();
+            _httpClient = httpClient;
+            _storageService = storageService;
+            _authenticationStateProvider = authenticationStateProvider;
         }
 
-        public Task<HttpResponseMessage> DeleteJob(int id)
+        public async Task<List<Job>> GetJobs()
         {
-            throw new NotImplementedException();
-        }
+            var response = await _httpClient.GetAsync("jobs/GetJobs");
 
-        public Task<HttpResponseMessage> EditJob(JobDto job)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HttpResponseMessage> GetJob(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HttpResponseMessage> GetJobs(string sort = null, int pageNumber = 5, int pageSize = 20, bool onlyJobs = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HttpResponseMessage> GetQuotes(string sort = null, int pageNumber = 5, int pageSize = 20, bool onlyJobs = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HttpResponseMessage> SearchJobs(string jobNo)
-        {
-            throw new NotImplementedException();
+            if (response.IsSuccessStatusCode)
+            {
+                var jobs = JsonConvert.DeserializeObject<List<Job>>(response.Content.ReadAsStringAsync().Result);
+                return jobs;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -8,6 +8,12 @@
 
 <h1>Log In</h1>
 
+@if (ErrorMessage!=null)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@ErrorMessage</p>
+    </div>
+}
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Please log in using your account information</h5>
@@ -33,21 +39,38 @@
 @code {
 
     private UserLoginDto userLogin;
+    private string ErrorMessage;
 
-        protected override Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         userLogin = new UserLoginDto();
+        ErrorMessage = null;
         userService.LogOut();
         return base.OnInitializedAsync();
     }
 
     private async Task HandleLogin()
     {
-        var result = await userService.Login(userLogin);
+        ErrorMessage = null;
 
-        if (result.IsSuccessStatusCode)
+        try
         {
-            NavigationManager.NavigateTo("/");
+            var result = await userService.Login(userLogin);
+
+            if (result.IsSuccessStatusCode)
+            {
+
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                ErrorMessage = result.ReasonPhrase;
+            }
+        }
+
+        catch (Exception e)
+        {
+            ErrorMessage = e.ToString();
         }
     }
 }
