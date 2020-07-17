@@ -12,7 +12,7 @@ namespace SchedulerUI.Services.Interfaces
         bool IsLoggedIn { get; set; }
         Task<HttpResponseMessage> Login(UserLoginDto userLogin);
         Task<HttpResponseMessage> Register(UserDto user);
-        Task LogOut(UserLoginDto userLogin);
+        Task LogOut();
         Task SetAuthorizationHeader();
         Task<bool> MinimumAuthRequired(int authLevel);
     }

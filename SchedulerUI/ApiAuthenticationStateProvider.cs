@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -19,7 +18,14 @@ namespace SchedulerUI
 
         public ApiAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
         {
+            string address;
+#if DEBUG
+            address = "https://localhost:44326/api/";
+#else
+            address = "https://dashboardschedulerapi.azurewebsites.net/api/"
+#endif
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(address);
             _localStorage = localStorage;
         }
 
@@ -28,12 +34,14 @@ namespace SchedulerUI
         {
             var userInfo = await _localStorage.GetItemAsync<AuthenticationDto>("User");
 
+            if (userInfo == null)
+            {
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
             if (string.IsNullOrWhiteSpace(userInfo.AccessToken))
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", userInfo.AccessToken);
 
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(userInfo.AccessToken), "jwt")));
         }

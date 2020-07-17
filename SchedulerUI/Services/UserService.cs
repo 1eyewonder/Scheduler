@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 using SchedulerAPI.Dtos;
 using SchedulerUI.Services.Interfaces;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -55,7 +56,7 @@ namespace SchedulerUI.Services
             }
         }
 
-        public async Task LogOut(UserLoginDto userLogin)
+        public async Task LogOut()
         {
             IsLoggedIn = false;
             await _storageService.RemoveItemAsync("User");
@@ -68,7 +69,15 @@ namespace SchedulerUI.Services
             if (!_httpClient.DefaultRequestHeaders.Contains("Authorization"))
             {
                 var token = await _storageService.GetItemAsync<AuthenticationDto>("User");
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer ", token.AccessToken);
+
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.AccessToken);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
 
@@ -86,9 +95,5 @@ namespace SchedulerUI.Services
             var result = await _storageService.GetItemAsync<AuthenticationDto>("User");
             return result.AuthorizationLevel >= authLevel;
         }
-
-        //public async Task<IEnumerable<User>> GetUsers()
-        //{
-        //}
     }
 }

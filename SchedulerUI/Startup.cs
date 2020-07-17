@@ -1,21 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SchedulerAPI.Controllers;
 using SchedulerUI.Data;
 using SchedulerUI.Services;
 using SchedulerUI.Services.Interfaces;
+using System.Net.Http;
 
 namespace SchedulerUI
 {
@@ -32,29 +25,16 @@ namespace SchedulerUI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            string address;
-#if DEBUG
-            address = "https://localhost:44326/api/";
-#else
-            address = "https://dashboardschedulerapi.azurewebsites.net/api/"
-#endif
-
-            services.AddHttpClient<IUserService, UserService>(client =>
-            {
-                client.BaseAddress = new Uri(address);
-            });
-
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddBlazoredLocalStorage();
-            services.AddAuthenticationCore();
-            services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
-            //services.AddScoped<IUserService, UserService>();
             services.AddSingleton<WeatherForecastService>();
 
+            services.AddBlazoredLocalStorage();
 
-            
-            
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+
+            services.AddSingleton<HttpClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +55,9 @@ namespace SchedulerUI
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

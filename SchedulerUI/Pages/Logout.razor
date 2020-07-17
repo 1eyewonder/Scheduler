@@ -1,0 +1,18 @@
+﻿@page "/logout"
+
+@inject IUserService userService
+@inject NavigationManager navigationManager
+
+<h2>Have a nice day :)</h2>
+<p>
+    You have logged out. To sign back in, click <a href="Login">here</a>
+</p>
+
+@code {
+
+    protected override Task OnInitializedAsync()
+    {
+        userService.LogOut();
+        return base.OnInitializedAsync();
+    }
+}

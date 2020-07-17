@@ -25,6 +25,8 @@ namespace SchedulerAPI.Data
             //Originally had quotenumber as unique but realized copy jobs could be more fluid if quote numbers could be copied
             //builder.Entity<Job>(entity => entity.HasIndex(e => e.QuoteNumber).IsUnique());
             builder.Entity<Job>(entity => entity.HasIndex(e => e.JobNumber).IsUnique());
+            builder.Entity<User>(entity => entity.HasIndex(e => e.Name).IsUnique());
+            builder.Entity<User>(entity => entity.HasIndex(e => e.Email).IsUnique());
         }
     }
 }
