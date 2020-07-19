@@ -1,9 +1,14 @@
 ﻿@inherits LayoutComponentBase
 @using SchedulerUI.Components
 
-<div class="sidebar">
-    <NavMenu />
-</div>
+<BlazoredModal/>
+
+<AuthorizeView>
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+</AuthorizeView>
+
 
 <div class="main">
     <div class="top-row px-4">

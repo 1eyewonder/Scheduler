@@ -11,8 +11,9 @@ namespace SchedulerAPI.Dtos
         public int Id { get; set; }
 
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [MinLength(1)]
+        [MaxLength(18)]
+        public string Name { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

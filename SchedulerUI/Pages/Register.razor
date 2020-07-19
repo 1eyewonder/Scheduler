@@ -1,6 +1,8 @@
 ﻿@page "/register"
 
 @using SchedulerAPI.Dtos
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
 
 @inject IUserService userService
 @inject NavigationManager NavigationManager
@@ -10,10 +12,7 @@
 @if (ShowErrors)
 {
     <div class="alert alert-danger" role="alert">
-        @foreach (var error in Errors)
-        {
-            <p>@error</p>
-        }
+        @Errors
     </div>
 }
 
@@ -25,23 +24,27 @@
             <ValidationSummary />
 
             <div class="form-group">
-                <label for="email">Username</label>
-                <InputText Id="email" class="form-control" @bind-Value="user.Name" />
+                @*<label for="email">Username</label>*@
+                @*<InputText Id="email" class="form-control" @bind-Value="user.Name" />*@
+                <SfTextBox Placeholder="Username" FloatLabelType="@FloatLabelType.Auto" Id="username" @bind-Value="user.Name"></SfTextBox>
                 <ValidationMessage For="@(() => user.Name)" />
             </div>
             <div class="form-group">
-                <label for="email">Email address</label>
-                <InputText Id="email" class="form-control" @bind-Value="user.Email" />
+                @*<label for="email">Email address</label>
+        <InputText Id="email" class="form-control" @bind-Value="user.Email" />*@
+                <SfTextBox Placeholder="Email" FloatLabelType="@FloatLabelType.Auto" Id="email" @bind-Value="user.Email" Type="InputType.Email"></SfTextBox>
                 <ValidationMessage For="@(() => user.Email)" />
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <InputText Id="password" type="password" class="form-control" @bind-Value="user.Password" />
+                @*<label for="password">Password</label>
+        <InputText Id="password" type="password" class="form-control" @bind-Value="user.Password" />*@
+                <SfTextBox Placeholder="Password" FloatLabelType="@FloatLabelType.Auto" Id="password" @bind-Value="user.Password" Type="@InputType.Password"></SfTextBox>
                 <ValidationMessage For="@(() => user.Password)" />
             </div>
             <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="confirmPassword" />
+                @*<label for="confirmPassword">Confirm Password</label>
+        <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="confirmPassword" />*@
+                <SfTextBox Placeholder="Confirm password" FloatLabelType="@FloatLabelType.Auto" Id="confirmPassword" @bind-Value="@confirmPassword" Type="InputType.Password"></SfTextBox>
                 <ValidationMessage For="@(() => confirmPassword)" />
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -76,7 +79,7 @@
         }
         else
         {
-            Errors = "Passwords do not match. Please try and re-enter.";
+            Errors = "Passwords do not match. Please, try again.";
             ShowErrors = true;
         }
     }

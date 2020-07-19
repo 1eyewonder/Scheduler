@@ -129,23 +129,23 @@ namespace SchedulerAPI.Controllers
         [AllowAnonymous]
         public IActionResult Login([FromBody]UserLoginDto user)
         {
-            var userEmail = _context.Users.Include(r=>r.Role).FirstOrDefault(u => u.Email == user.Email);
+            var userName = _context.Users.Include(r=>r.Role).FirstOrDefault(u => u.Name == user.Name);
 
-            if (userEmail == null)
+            if (userName == null)
             {
                 return NotFound();
             }
 
-            if (!SecurePasswordHasherHelper.Verify(user.Password, userEmail.Password))
+            if (!SecurePasswordHasherHelper.Verify(user.Password, userName.Password))
             {
                 return Unauthorized();
             }
 
             var claims = new[]
             {
-               new Claim(JwtRegisteredClaimNames.Email, user.Email),
-               new Claim(ClaimTypes.Email, user.Email),
-               new Claim(ClaimTypes.Role, userEmail.Role.AuthorizationLevel.ToString()) //property where role data annotation is set
+               new Claim(JwtRegisteredClaimNames.UniqueName, user.Name),
+               new Claim(ClaimTypes.Name, user.Name),
+               new Claim(ClaimTypes.Role, userName.Role.AuthorizationLevel.ToString()) //property where role data annotation is set
              };
 
             var token = _auth.GenerateAccessToken(claims);
@@ -157,8 +157,8 @@ namespace SchedulerAPI.Controllers
                 TokenType = token.TokenType,
                 CreationTime = token.ValidFrom,
                 ExpirationTime = token.ValidTo,
-                AuthorizationLevel = userEmail.Role.AuthorizationLevel,
-                UserId = userEmail.Id
+                AuthorizationLevel = userName.Role.AuthorizationLevel,
+                UserId = userName.Id
             });
         }
 

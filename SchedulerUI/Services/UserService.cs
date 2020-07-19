@@ -29,12 +29,18 @@ namespace SchedulerUI.Services
             IsLoggedIn = false;
         }
 
+        /// <summary>
+        /// Logs user
+        /// </summary>
+        /// <param name="userLogin"></param>
+        /// <returns></returns>
         public async Task<HttpResponseMessage> Login(UserLoginDto userLogin)
         {
-            //Sends user info to api and awaits response
+            // Sends user info to api and awaits response
             var json = JsonConvert.SerializeObject(userLogin);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
+            // Calls web api login
             var response = await _httpClient.PostAsync("users/login", data);
             if (response.IsSuccessStatusCode)
             {
@@ -45,7 +51,7 @@ namespace SchedulerUI.Services
                 await _storageService.SetItemAsync("User", userInfo);
                 IsLoggedIn = true;
 
-                await ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(userLogin.Email);
+                await ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(userLogin.Name);
                 await SetAuthorizationHeader();
                 return response;
             }

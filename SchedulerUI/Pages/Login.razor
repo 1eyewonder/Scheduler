@@ -3,12 +3,15 @@
 @using SchedulerUI.Services.Interfaces
 @using SchedulerAPI.Dtos
 
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
 @inject IUserService userService
 @inject NavigationManager NavigationManager
 
 <h1>Log In</h1>
 
-@if (ErrorMessage!=null)
+@if (ErrorMessage != null)
 {
     <div class="alert alert-danger" role="alert">
         <p>@ErrorMessage</p>
@@ -16,22 +19,28 @@
 }
 <div class="card">
     <div class="card-body">
+
         <h5 class="card-title">Please log in using your account information</h5>
+
         <EditForm Model="userLogin" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
             <div class="form-group">
-                <label for="email">Email address</label>
-                <InputText Id="email" Class="form-control" @bind-Value="userLogin.Email" />
-                <ValidationMessage For="@(() => userLogin.Email)" />
+                <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                    <SfTextBox Placeholder="Username" FloatLabelType="@FloatLabelType.Auto" Id="username" @bind-Value="userLogin.Name"></SfTextBox>
+                </div>
+                <ValidationMessage For="@(() => userLogin.Name)" />
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <InputText Id="password" type="password" Class="form-control" @bind-Value="userLogin.Password" />
+                <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                    <SfTextBox Placeholder="Password" FloatLabelType="@FloatLabelType.Auto" Id="password" @bind-Value="userLogin.Password" Type="InputType.Password"></SfTextBox>
+                </div>
                 <ValidationMessage For="@(() => userLogin.Password)" />
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                <SfButton IsPrimary="true" Disabled="IsRunning">Login</SfButton>
+            </div>
         </EditForm>
     </div>
 </div>
@@ -40,17 +49,26 @@
 
     private UserLoginDto userLogin;
     private string ErrorMessage;
+    private bool IsRunning;
 
     protected override Task OnInitializedAsync()
     {
-        userLogin = new UserLoginDto();
+        userLogin = new UserLoginDto()
+        {
+            Name = "admin",
+            Password = "password"
+        };
+        IsRunning = false;
         ErrorMessage = null;
         userService.LogOut();
+
         return base.OnInitializedAsync();
     }
 
     private async Task HandleLogin()
     {
+        // Removes error messages and disables additional button presses
+        IsRunning = true;
         ErrorMessage = null;
 
         try
@@ -59,7 +77,6 @@
 
             if (result.IsSuccessStatusCode)
             {
-
                 NavigationManager.NavigateTo("/");
             }
             else
@@ -68,9 +85,13 @@
             }
         }
 
+        // Catches issues such as not being able to connect to server
         catch (Exception e)
         {
             ErrorMessage = e.ToString();
         }
+
+        // Enables button to be pressed again if needed
+        IsRunning = false;
     }
 }

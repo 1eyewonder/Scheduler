@@ -47,7 +47,7 @@ namespace SchedulerUI
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(userInfo.AccessToken), "jwt")));
         }
 
-        public async Task MarkUserAsAuthenticated(string email)
+        public async Task MarkUserAsAuthenticated(string userName)
         {
             ClaimsPrincipal authenticatedUser;
             var role = await _localStorage.GetItemAsync<AuthenticationDto>("User");
@@ -55,11 +55,11 @@ namespace SchedulerUI
             // if issue with getting from local storage, assumes a basic user authorization level
             if (role != null)
             {
-                authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, email), new Claim(ClaimTypes.Role, role.AuthorizationLevel.ToString()) }, "apiauth"));
+                authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, userName), new Claim(ClaimTypes.Role, role.AuthorizationLevel.ToString()) }, "apiauth"));
             }
             else
             {
-                authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, email), new Claim(ClaimTypes.Role, "0") }, "apiauth"));
+                authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, userName), new Claim(ClaimTypes.Role, "0") }, "apiauth"));
             }
             
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));

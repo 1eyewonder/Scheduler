@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Blazored.Modal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using SchedulerUI.Data;
 using SchedulerUI.Services;
 using SchedulerUI.Services.Interfaces;
+using Syncfusion.Blazor;
 using System.Net.Http;
 
 namespace SchedulerUI
@@ -30,6 +32,8 @@ namespace SchedulerUI
             services.AddSingleton<WeatherForecastService>();
 
             services.AddBlazoredLocalStorage();
+            services.AddSyncfusionBlazor();
+            services.AddBlazoredModal();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
@@ -41,6 +45,9 @@ namespace SchedulerUI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjg5NjIwQDMxMzgyZTMyMmUzMGpuQjV6OWVYUDJINGRuYUJ2NTE2YUJrb2hRS2RIYnI2WDFXZkRvRHhjbW89");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
