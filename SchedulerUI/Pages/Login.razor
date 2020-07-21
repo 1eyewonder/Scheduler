@@ -5,6 +5,7 @@
 
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Spinner
 
 @inject IUserService userService
 @inject NavigationManager NavigationManager
@@ -22,26 +23,26 @@
 
         <h5 class="card-title">Please log in using your account information</h5>
 
-        <EditForm Model="userLogin" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+            <EditForm Model="userLogin" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-            <div class="form-group">
-                <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
-                    <SfTextBox Placeholder="Username" FloatLabelType="@FloatLabelType.Auto" Id="username" @bind-Value="userLogin.Name"></SfTextBox>
+                <div class="form-group">
+                    <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                        <SfTextBox Placeholder="Username" FloatLabelType="@FloatLabelType.Auto" Id="username" @bind-Value="userLogin.Name"></SfTextBox>
+                    </div>
+                    <ValidationMessage For="@(() => userLogin.Name)" />
                 </div>
-                <ValidationMessage For="@(() => userLogin.Name)" />
-            </div>
-            <div class="form-group">
-                <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
-                    <SfTextBox Placeholder="Password" FloatLabelType="@FloatLabelType.Auto" Id="password" @bind-Value="userLogin.Password" Type="InputType.Password"></SfTextBox>
+                <div class="form-group">
+                    <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                        <SfTextBox Placeholder="Password" FloatLabelType="@FloatLabelType.Auto" Id="password" @bind-Value="userLogin.Password" Type="InputType.Password"></SfTextBox>
+                    </div>
+                    <ValidationMessage For="@(() => userLogin.Password)" />
                 </div>
-                <ValidationMessage For="@(() => userLogin.Password)" />
-            </div>
-            <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
-                <SfButton IsPrimary="true" Disabled="IsRunning">Login</SfButton>
-            </div>
-        </EditForm>
+                <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
+                    <SfButton IsPrimary="true" Disabled="IsRunning">Login</SfButton>
+                </div>
+            </EditForm>
     </div>
 </div>
 
@@ -58,6 +59,7 @@
             Name = "admin",
             Password = "password"
         };
+
         IsRunning = false;
         ErrorMessage = null;
         userService.LogOut();

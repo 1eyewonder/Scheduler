@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchedulerAPI.Dtos.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchedulerAPI.Dtos
 {
-    public class JobDto
+    public class JobDto : IJob
     {
         [Required]
         [Key]

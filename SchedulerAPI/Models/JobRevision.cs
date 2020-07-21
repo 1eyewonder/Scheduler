@@ -12,6 +12,9 @@ namespace SchedulerAPI.Models
         [Required]
         public int Id { get; set; }
 
+        [Required]
+        public int JobId { get; set; }
+
         /// <summary>
         /// Revision number of the job
         /// </summary>

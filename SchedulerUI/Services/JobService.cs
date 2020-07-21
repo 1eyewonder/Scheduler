@@ -1,10 +1,13 @@
-﻿using Blazored.LocalStorage;
+﻿using AutoMapper;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
+using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
 using SchedulerUI.Services.Interfaces;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SchedulerUI.Services
@@ -37,6 +40,30 @@ namespace SchedulerUI.Services
             {
                 return null;
             }
+        }
+
+        public async Task<Job> GetJob(int id)
+        {
+            var response = await _httpClient.GetAsync("jobs/" + id);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var job = JsonConvert.DeserializeObject<Job>(response.Content.ReadAsStringAsync().Result);
+                return job;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<HttpResponseMessage> UpdateJob(JobDto job)
+        {
+            var json = JsonConvert.SerializeObject(job);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync("jobs/" + job.Id, data);
+
+            return response;
         }
     }
 }

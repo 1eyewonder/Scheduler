@@ -49,7 +49,7 @@ namespace SchedulerAPI.Controllers
         [AllowAnonymous]
         public IActionResult GetJobs()
         {
-            var jobs = _context.Jobs;
+            var jobs = _context.Jobs.Include(q=>q.QuoteRevisions).Include(j=>j.JobRevisions);
 
             //If successfull request
             if (jobs != null)

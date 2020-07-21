@@ -1,5 +1,7 @@
+using AutoMapper;
 using Blazored.LocalStorage;
 using Blazored.Modal;
+using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SchedulerUI.Data;
+using SchedulerUI.MappingProfiles;
 using SchedulerUI.Services;
 using SchedulerUI.Services.Interfaces;
 using Syncfusion.Blazor;
@@ -31,14 +34,21 @@ namespace SchedulerUI
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
 
+            //Nuget services
             services.AddBlazoredLocalStorage();
             services.AddSyncfusionBlazor();
             services.AddBlazoredModal();
+            services.AddScoped<IModalService, ModalService>();
 
+            //Automapper profiles
+            services.AddAutoMapper(typeof(JobProfile));
+
+            //DI services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddScoped<IJobService, JobService>();
-
+           
+            //Http services
             services.AddSingleton<HttpClient>();
         }
 

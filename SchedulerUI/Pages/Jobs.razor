@@ -7,7 +7,7 @@
 @inject IUserService UserService
 @inject IJobService JobService
 @inject NavigationManager NavigationManager
-@inject IModalService Modal
+@inject IModalService Modal 
 
 @attribute [Authorize]
 
@@ -15,7 +15,7 @@
 
 <div class="row">
     <SfButton IsPrimary="true" CssClass="e-small">Add Job</SfButton>
-    <SfButton IsPrimary="true" CssClass="e-small">Refresh</SfButton>
+    <SfButton IsPrimary="true" CssClass="e-small" OnClick="Refresh">Refresh</SfButton>
 </div>
 
 @if (JobList == null)
@@ -28,32 +28,72 @@ else
         <thead class="thead-dark">
             <tr>
                 <th>Quote Number</th>
+                <th>Quote Revision</th>
                 <th>Job Number</th>
+                <th>Job Revision</th>
                 <th>Project Number</th>
                 <th>Is A Job</th>
                 <AuthorizeView Roles="1,2">
-                    <th>Edit Job</th>
+                    <Authorized>
+                        <th>Edit Job</th>
+                    </Authorized>
                 </AuthorizeView>
                 <AuthorizeView Roles="2">
-                    <th>Delete Job</th>
+                    <Authorized>
+                        <th>Delete Job</th>
+                    </Authorized>
                 </AuthorizeView>
             </tr>
         </thead>
         <tbody>
             @foreach (var job in JobList)
             {
-                <tr>
-                    <td>@job.QuoteNumber</td>
+            <tr>
+                <td>@job.QuoteNumber</td>
+          
+                @if (job.JobRevisions.Count > 0)
+                {
+                    <td>@job.QuoteRevisions.FirstOrDefault().RevisionNumber</td>
+                }
+                else
+                {
+                    <td>...</td>
+                }
+
+                @if (job.JobNumber != null)
+                {
                     <td>@job.JobNumber</td>
+                }
+                else
+                {
+                    <td>...</td>
+                }
+
+                @if (job.JobRevisions.Count > 0)
+                {
+                    <td>@job.JobRevisions.FirstOrDefault().RevisionNumber</td>
+                }
+                else
+                {
+                    <td>...</td>
+                }
+
+                @if (job.ProjectNumber != null)
+                {
                     <td>@job.ProjectNumber</td>
-                    <td>@job.IsAJob</td>
-                    <td>
-                        <SfButton CssClass="e-small" OnClick="@(() => Modal.Show<EditJob>("Edit Job"))">Edit</SfButton>
-                    </td>
-                    <td>
-                        <SfButton CssClass="e-small">Delete</SfButton>
-                    </td>
-                </tr>
+                }
+                else
+                {
+                    <td>...</td>
+                }
+                <td>@job.IsAJob</td>
+                <td>
+                    <SfButton CssClass="e-small" OnClick="@(() => ShowEditJob(job.Id))">Edit</SfButton>
+                </td>
+                <td>
+                    <SfButton CssClass="e-small">Delete</SfButton>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -61,11 +101,43 @@ else
 
 @code {
 
-    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
     private List<Job> JobList;
+    private int jobRevision;
 
     protected override async Task OnInitializedAsync()
     {
         JobList = await JobService.GetJobs();
+
+        var test = JobList.First().JobRevisions;
+    }
+
+    private async Task Refresh()
+    {
+        JobList = await JobService.GetJobs();
+    }
+
+    private async Task ShowEditJob(int jobId)
+    {
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(EditJob.Id), jobId);
+
+        var options = new ModalOptions()
+        {
+            HideCloseButton = false,
+            DisableBackgroundCancel = true
+        };
+
+        var modalForm = Modal.Show<EditJob>("Edit Job", parameters, options);
+        var result = await modalForm.Result;
+
+        if (result.Cancelled)
+        {
+
+        }
+        else
+        {
+            await Refresh();
+        }
     }
 }

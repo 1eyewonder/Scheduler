@@ -21,22 +21,29 @@
     <Compile Remove="Migrations\20200714161529_DroppedRevisionsPrimaryKey.Designer.cs" />
     <Compile Remove="Migrations\20200714161648_SwappedJobAndRevisionsForeignKeys.cs" />
     <Compile Remove="Migrations\20200714161648_SwappedJobAndRevisionsForeignKeys.Designer.cs" />
+    <Compile Remove="Migrations\20200721193537_AddedJobIdToRevisionModels.cs" />
+    <Compile Remove="Migrations\20200721193537_AddedJobIdToRevisionModels.Designer.cs" />
+    <Compile Remove="Migrations\20200721193848_AddedJobIdToRevisionsModel.cs" />
+    <Compile Remove="Migrations\20200721193848_AddedJobIdToRevisionsModel.Designer.cs" />
+    <Compile Remove="Migrations\20200721194715_ReAppliedJobDataAnnotations.cs" />
+    <Compile Remove="Migrations\20200721194715_ReAppliedJobDataAnnotations.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.Authentication.Plugin" Version="1.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
