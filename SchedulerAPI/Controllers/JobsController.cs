@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchedulerAPI.Data;
@@ -20,18 +21,27 @@ namespace SchedulerAPI.Controllers
     public class JobsController : ControllerBase
     {
         private readonly SchedulerContext _context;
+        private readonly IMapper _mapper;
 
-        public JobsController(SchedulerContext context)
+        public JobsController(SchedulerContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
         public IActionResult Get(int id)
         {
-            var job = _context.Jobs.Find(id);
+            //Attempts to get entry with given id
+            var job = _context.Jobs.Include(q => q.QuoteRevisions)
+                .Include(j => j.JobRevisions)
+                .Include(p => p.Project)
+                .ThenInclude(c => c.Customer)
+                .Where(i=>i.Id == id)
+                .Single();
 
+            //If not found
             if (job == null) return NotFound("No record found with this id");
 
             return Ok(job);
@@ -49,7 +59,11 @@ namespace SchedulerAPI.Controllers
         [AllowAnonymous]
         public IActionResult GetJobs()
         {
-            var jobs = _context.Jobs.Include(q=>q.QuoteRevisions).Include(j=>j.JobRevisions);
+            //Attempts to return dbset
+            var jobs = _context.Jobs.Include(q=>q.QuoteRevisions)
+                .Include(j=>j.JobRevisions)
+                .Include(p=>p.Project)
+                .ThenInclude(c=>c.Customer);
 
             //If successfull request
             if (jobs != null)
@@ -68,8 +82,14 @@ namespace SchedulerAPI.Controllers
         [AllowAnonymous]
         public IActionResult FindJobs(string jobNo)
         {
-            var jobs = _context.Jobs.Where(j => j.JobNumber.StartsWith(jobNo));
+            //Searches for entries based on job number
+            var jobs = _context.Jobs.Include(q => q.QuoteRevisions)
+                .Include(j => j.JobRevisions)
+                .Include(p => p.Project)
+                .ThenInclude(c => c.Customer)
+                .Where(j => j.JobNumber.StartsWith(jobNo));
 
+            //If no matching results
             if (jobs == null)
             {
                 return NotFound();
@@ -89,12 +109,8 @@ namespace SchedulerAPI.Controllers
             }
 
             //Translates values from dto
-            var job = new Job
-            {
-                QuoteNumber = jobEntry.QuoteNumber,
-                JobNumber = jobEntry.JobNumber,
-                ProjectNumber = jobEntry.ProjectNumber
-            };
+            var job = new Job();
+            _mapper.Map(jobEntry, job);
 
             //Returns true if not null
             job.IsAJob = jobEntry.JobNumber != null;
@@ -121,6 +137,7 @@ namespace SchedulerAPI.Controllers
                     RevisionSummary = null
                 };
 
+                //Adds object to collection
                 job.JobRevisions.Add(jobRev);
             }
 
@@ -138,8 +155,15 @@ namespace SchedulerAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var dbJob = _context.Jobs.Find(id);
+            //Attempts to find entry with given id
+            var dbJob = _context.Jobs.Include(q => q.QuoteRevisions)
+                .Include(j => j.JobRevisions)
+                .Include(p => p.Project)
+                .ThenInclude(c => c.Customer)
+                .Where(i => i.Id == id)
+                .Single();
 
+            //If not found
             if (dbJob == null)
             {
                 return BadRequest("No record found against this id");
@@ -160,9 +184,7 @@ namespace SchedulerAPI.Controllers
             }
 
             //Update values
-            dbJob.QuoteNumber = job.QuoteNumber;
-            dbJob.JobNumber = job.JobNumber;
-            dbJob.ProjectNumber = job.ProjectNumber;
+            _mapper.Map(job, dbJob);
             dbJob.IsAJob = job.JobNumber != null;
 
             //Save changes
@@ -181,9 +203,13 @@ namespace SchedulerAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            //Queries entity
-            var job = _context.Jobs.Include(j => j.JobRevisions).Include(q => q.QuoteRevisions).Where(i => i.Id == id).Single();
+            //Attempts to find entry with given id
+            var job = _context.Jobs.Include(q => q.QuoteRevisions)
+                .Include(j => j.JobRevisions)
+                .Where(i => i.Id == id)
+                .Single();
 
+            //If not found
             if (job == null)
             {
                 return BadRequest("There is no record of this id");
@@ -192,11 +218,21 @@ namespace SchedulerAPI.Controllers
             //Remove parent entry
             _context.Jobs.Remove(job);
 
-            //Clears child entries
-            _context.JobRevisions.Remove(job.JobRevisions.Single());
-            _context.QuoteRevisions.Remove(job.QuoteRevisions.Single());
-            _context.SaveChanges();
+            //Clears child entries and save changes
+            //Project is not removed since it is not job specific
+            if (job.JobRevisions.Count > 0)
+            {
+                _context.JobRevisions.Remove(job.JobRevisions.Single());
+            }
 
+            if (job.QuoteRevisions.Count > 0)
+            {
+                _context.QuoteRevisions.Remove(job.QuoteRevisions.Single());
+            }
+
+
+            //Save changes           
+            _context.SaveChanges();
             return Ok("Record successfully deleted");
         }
     }

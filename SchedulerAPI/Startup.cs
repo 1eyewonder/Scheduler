@@ -15,6 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SchedulerAPI.Data;
 using System.Text;
+using AutoMapper;
+using SchedulerAPI.Profiles;
 
 namespace SchedulerAPI
 {
@@ -36,7 +38,6 @@ namespace SchedulerAPI
              services.AddDbContext<SchedulerContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("sqlConnection")));
 #endif
 
-            //services.AddMvc().AddXmlSerializerFormatters();
             services.AddControllers().AddNewtonsoftJson();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -53,6 +54,9 @@ namespace SchedulerAPI
                         ClockSkew = TimeSpan.Zero,
                     };
                 });
+
+            services.AddAutoMapper(typeof(SchedulerProfile));
+            services.AddScoped<IMapper, Mapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

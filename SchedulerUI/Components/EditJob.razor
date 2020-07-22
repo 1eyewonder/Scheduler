@@ -1,5 +1,6 @@
 ﻿@using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
 
 @inject IJobService JobService
 @inject IMapper Mapper
@@ -17,7 +18,6 @@
             <div class="form-group">
                 <SfTextBox Placeholder="Quote Number" FloatLabelType="@FloatLabelType.Auto" Id="quoteNumber" @bind-Value="JobDto.QuoteNumber"></SfTextBox>
                 <SfTextBox Placeholder="Job Number" FloatLabelType="@FloatLabelType.Auto" Id="jobNumber" @bind-Value="JobDto.JobNumber"></SfTextBox>
-                <SfTextBox Placeholder="Project Number" FloatLabelType="@FloatLabelType.Auto" Id="projectNumber" @bind-Value="JobDto.ProjectNumber"></SfTextBox>
 
             </div>
             <SfButton IsPrimary="true">Save Changes</SfButton>

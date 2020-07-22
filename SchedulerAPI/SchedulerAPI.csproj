@@ -27,10 +27,29 @@
     <Compile Remove="Migrations\20200721193848_AddedJobIdToRevisionsModel.Designer.cs" />
     <Compile Remove="Migrations\20200721194715_ReAppliedJobDataAnnotations.cs" />
     <Compile Remove="Migrations\20200721194715_ReAppliedJobDataAnnotations.Designer.cs" />
+    <Compile Remove="Migrations\20200722042707_AddedProjectAndCustomer.cs" />
+    <Compile Remove="Migrations\20200722042707_AddedProjectAndCustomer.Designer.cs" />
+    <Compile Remove="Migrations\20200722051523_test.cs" />
+    <Compile Remove="Migrations\20200722051523_test.Designer.cs" />
+    <Compile Remove="Migrations\20200722052312_RevisedCustomerPropOfProject.cs" />
+    <Compile Remove="Migrations\20200722052312_RevisedCustomerPropOfProject.Designer.cs" />
+    <Compile Remove="Migrations\20200722053205_UpdatedProjectPropInJob.cs" />
+    <Compile Remove="Migrations\20200722053205_UpdatedProjectPropInJob.Designer.cs" />
+    <Compile Remove="Migrations\20200722053410_UpdatedProjectPropInJob.cs" />
+    <Compile Remove="Migrations\20200722053410_UpdatedProjectPropInJob.Designer.cs" />
+    <Compile Remove="Migrations\20200722053733_UpdatedProjectPropInJob.cs" />
+    <Compile Remove="Migrations\20200722053733_UpdatedProjectPropInJob.Designer.cs" />
+    <Compile Remove="Migrations\20200722054056_UpdatedProjectPropInJob.cs" />
+    <Compile Remove="Migrations\20200722054056_UpdatedProjectPropInJob.Designer.cs" />
+    <Compile Remove="Migrations\20200722054745_AddedCustomerAndProject.cs" />
+    <Compile Remove="Migrations\20200722054745_AddedCustomerAndProject.Designer.cs" />
+    <Compile Remove="Migrations\20200722054949_AddedProjectAndCustomer.cs" />
+    <Compile Remove="Migrations\20200722054949_AddedProjectAndCustomer.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.Authentication.Plugin" Version="1.0.1" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />

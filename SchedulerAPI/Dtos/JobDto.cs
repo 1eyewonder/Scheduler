@@ -1,4 +1,6 @@
-﻿using SchedulerAPI.Dtos.Interfaces;
+﻿using SchedulerAPI.Interfaces;
+using SchedulerAPI.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchedulerAPI.Dtos
@@ -23,12 +25,8 @@ namespace SchedulerAPI.Dtos
         [RegularExpression("^[0-9]*$", ErrorMessage = "Job number must be numeric")]
         public string JobNumber { get; set; }
 
-        /// <summary>
-        /// Number users use to groups jobs that are categorized under the same project
-        /// </summary>
-        [MaxLength(15)]
-        [MinLength(5)]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Project number must be numeric")]
-        public string ProjectNumber { get; set; }
+
+        public int ProjectId { get; set; }
+
     }
 }

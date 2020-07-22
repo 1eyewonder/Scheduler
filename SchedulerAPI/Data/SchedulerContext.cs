@@ -19,6 +19,8 @@ namespace SchedulerAPI.Data
         public DbSet<JobRevision> JobRevisions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,6 +29,8 @@ namespace SchedulerAPI.Data
             builder.Entity<Job>(entity => entity.HasIndex(e => e.JobNumber).IsUnique());
             builder.Entity<User>(entity => entity.HasIndex(e => e.Name).IsUnique());
             builder.Entity<User>(entity => entity.HasIndex(e => e.Email).IsUnique());
+            builder.Entity<Project>(entity => entity.HasIndex(e => e.Name).IsUnique());
+            builder.Entity<Project>(entity => entity.HasIndex(e => e.Number).IsUnique());
         }
     }
 }

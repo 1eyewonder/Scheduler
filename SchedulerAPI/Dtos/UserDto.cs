@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchedulerAPI.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SchedulerAPI.Dtos
 {
-    public class UserDto
+    public class UserDto : IUser
     {
         public int Id { get; set; }
 

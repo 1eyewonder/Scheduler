@@ -5,19 +5,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SchedulerAPI.Dtos
+namespace SchedulerAPI.Models
 {
-    public class UserLoginDto : IUser
+    public class Customer : ICustomer
     {
+        [Key]
+        [Required]
         public int Id { get; set; }
 
         [Required]
-        [MinLength(1)]
-        [MaxLength(18)]
+        [MaxLength(15)]
+        [MinLength(5)]
         public string Name { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
     }
 }

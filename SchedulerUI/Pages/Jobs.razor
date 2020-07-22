@@ -31,7 +31,6 @@ else
                 <th>Quote Revision</th>
                 <th>Job Number</th>
                 <th>Job Revision</th>
-                <th>Project Number</th>
                 <th>Is A Job</th>
                 <AuthorizeView Roles="1,2">
                     <Authorized>
@@ -72,15 +71,6 @@ else
                 @if (job.JobRevisions.Count > 0)
                 {
                     <td>@job.JobRevisions.FirstOrDefault().RevisionNumber</td>
-                }
-                else
-                {
-                    <td>...</td>
-                }
-
-                @if (job.ProjectNumber != null)
-                {
-                    <td>@job.ProjectNumber</td>
                 }
                 else
                 {

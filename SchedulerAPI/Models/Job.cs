@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchedulerAPI.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SchedulerAPI.Models
 {
-    public class Job
+    public class Job : IJob
     {
         [Key]
         [Required]
@@ -31,13 +32,9 @@ namespace SchedulerAPI.Models
         [RegularExpression("^[0-9]*$", ErrorMessage = "Job number must be numeric")]
         public string JobNumber { get; set; }
 
-        /// <summary>
-        /// Number users use to groups jobs that are categorized under the same project
-        /// </summary>
-        [MaxLength(15)]
-        [MinLength(5)]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Project number must be numeric")]
-        public string ProjectNumber { get; set; }
+        [ForeignKey("Project")]
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
 
         /// <summary>
         /// Child table to keep track of quote revisions
