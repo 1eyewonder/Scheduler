@@ -1,0 +1,62 @@
+﻿@page "/projects"
+
+@using Syncfusion.Blazor.Buttons
+
+@inject IProjectsViewModel vm
+
+@attribute [Authorize(Roles = "1,2")]
+
+<h3>Projects</h3>
+
+<div class="row">
+    <SfButton IsPrimary="true" CssClass="e-small">Add Project</SfButton>
+    <SfButton IsPrimary="true" CssClass="e-small" OnClick="vm.Refresh">Refresh</SfButton>
+</div>
+
+@if (vm.ProjectList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Customer</th>
+                <th>Edit Project</th>
+                <AuthorizeView Roles="2">
+                    <Authorized>
+                        <th>Delete Project</th>
+                    </Authorized>
+                </AuthorizeView>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in vm.ProjectList)
+            {
+            <tr>
+                <td>@project.Name</td>
+                <td>@project.Number</td>
+                <td>@project.Customer.Name</td>
+
+                <td>
+                    <SfButton CssClass="e-small">Edit</SfButton>
+                </td>
+                <td>
+                    <SfButton CssClass="e-small">Delete</SfButton>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await vm.Initialization;
+    }
+}

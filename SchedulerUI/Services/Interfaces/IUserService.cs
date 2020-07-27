@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace SchedulerUI.Services.Interfaces
 {
-    interface IUserService
+    /// <summary>
+    /// Service for handling communication with api in regards to users
+    /// </summary>
+    public interface IUserService
     {
         bool IsLoggedIn { get; set; }
         Task<HttpResponseMessage> Login(UserLoginDto userLogin);

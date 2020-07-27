@@ -8,10 +8,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchedulerAPI.Profiles;
 using SchedulerUI.Data;
-using SchedulerUI.MappingProfiles;
 using SchedulerUI.Services;
 using SchedulerUI.Services.Interfaces;
+using SchedulerUI.ViewModels.Interfaces;
+using SchedulerUI.ViewModels.Jobs;
+using SchedulerUI.ViewModels.Projects;
+using SchedulerUI.ViewModels.UserManagement;
 using Syncfusion.Blazor;
 using System.Net.Http;
 
@@ -41,12 +45,20 @@ namespace SchedulerUI
             services.AddScoped<IModalService, ModalService>();
 
             //Automapper profiles
-            services.AddAutoMapper(typeof(JobProfile));
+            services.AddAutoMapper(typeof(SchedulerProfile)); //profile found in api
+            services.AddScoped<IMapper, Mapper>();
 
-            //DI services
+            //My services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddScoped<IJobService, JobService>();
+            services.AddScoped<IProjectService, ProjectService>();
+
+            //ViewModel services
+            services.AddScoped<ILoginViewModel, LoginViewModel>();
+            services.AddScoped<IJobsViewModel, JobsViewModel>();
+            services.AddScoped<IEditJobViewModel, EditJobViewModel>();
+            services.AddScoped<IProjectsViewModel, ProjectsViewModel>();
            
             //Http services
             services.AddSingleton<HttpClient>();

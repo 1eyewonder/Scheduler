@@ -15,7 +15,7 @@ namespace SchedulerAPI.Models
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [Required]
         [MaxLength(15)]

@@ -16,6 +16,9 @@ namespace SchedulerAPI.Dtos
         [MaxLength(18)]
         public string Name { get; set; }
 
+        /// <summary>
+        /// User email
+        /// </summary>
         [Required]
         [EmailAddress]
         public string Email { get; set; }

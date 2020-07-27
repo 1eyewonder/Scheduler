@@ -55,7 +55,7 @@ namespace SchedulerAPI.Controllers
         /// <param name="pageSize">Data request size per page</param>
         /// <param name="onlyJobs">True to show only quotes</param>
         /// <returns></returns>
-        [HttpGet("[action]")]
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult GetJobs()
         {

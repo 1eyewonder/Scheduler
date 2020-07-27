@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchedulerAPI.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SchedulerAPI.Dtos
 {
-    public class ProjectDto
+    public class ProjectDto : IProject
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [Required]
         [MaxLength(15)]

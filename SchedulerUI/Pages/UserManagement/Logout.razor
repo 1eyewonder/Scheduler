@@ -1,7 +1,7 @@
 ﻿@page "/logout"
 
-@inject IUserService userService
-@inject NavigationManager navigationManager
+@using SchedulerUI.ViewModels.Interfaces
+@inject ILoginViewModel vm
 
 <h2>Have a nice day :)</h2>
 <p>
@@ -12,7 +12,7 @@
 
     protected override Task OnInitializedAsync()
     {
-        userService.LogOut();
+        vm.LogOut();
         return base.OnInitializedAsync();
     }
 }

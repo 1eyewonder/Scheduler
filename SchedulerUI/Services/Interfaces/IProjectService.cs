@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 namespace SchedulerUI.Services.Interfaces
 {
     /// <summary>
-    /// Service for handling communication with api in regards to jobs
+    /// Service for handling communication with api in regards to projects
     /// </summary>
-    public interface IJobService
+    public interface IProjectService
     {
         /// <summary>
-        /// Gets list of jobs from database
+        /// Gets list of projects from database
         /// </summary>
         /// <returns></returns>
-        Task<List<Job>> GetJobs();
+        Task<List<Project>> GetProjects();
 
         /// <summary>
-        /// Gets job with given id from database
+        /// Gets project with given id from database
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<Job> GetJob(int id);
+        Task<Project> GetProject(int id);
 
         /// <summary>
-        /// Updates given job in the database
+        /// Updates given project in the database
         /// </summary>
-        /// <param name="job"></param>
+        /// <param name="project"></param>
         /// <returns></returns>
-        Task<HttpResponseMessage> UpdateJob(JobDto job);
+        Task<HttpResponseMessage> UpdateProject(ProjectDto project);
     }
 }
