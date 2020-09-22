@@ -1,5 +1,6 @@
 ﻿using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
+using SchedulerUI.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace SchedulerUI.Services.Interfaces
         /// Gets list of jobs from database
         /// </summary>
         /// <returns></returns>
-        Task<List<Job>> GetJobs();
+        Task<PaginationResponseDto<Job>> GetJobs(int recordsPerPage = 10, int pageNumber = 1);
 
         /// <summary>
         /// Gets job with given id from database
@@ -32,5 +33,19 @@ namespace SchedulerUI.Services.Interfaces
         /// <param name="job"></param>
         /// <returns></returns>
         Task<HttpResponseMessage> UpdateJob(JobDto job);
+
+        /// <summary>
+        /// Adds job to database
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
+        Task<HttpResponseMessage> AddJob(JobDto job);
+
+        /// <summary>
+        /// Removes the given job from the database
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <returns></returns>
+        Task<HttpResponseMessage> DeleteJob(int jobId);
     }
 }

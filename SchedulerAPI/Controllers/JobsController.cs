@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchedulerAPI.Data;
 using SchedulerAPI.Dtos;
+using SchedulerAPI.Helpers;
 using SchedulerAPI.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SchedulerAPI.Controllers
 {
@@ -47,35 +51,21 @@ namespace SchedulerAPI.Controllers
             return Ok(job);
         }
 
-        /// <summary>
-        /// Returns entries in Jobs table
-        /// </summary>
-        /// <param name="sort">Sorts by job number: "asc" for ascending and "desc" for descending</param>
-        /// <param name="pageNumber">Number of pages data is split into</param>
-        /// <param name="pageSize">Data request size per page</param>
-        /// <param name="onlyJobs">True to show only quotes</param>
-        /// <returns></returns>
-        [HttpGet]
+        [HttpGet("[action]")]
         [AllowAnonymous]
-        public IActionResult GetJobs()
+        public async Task<ActionResult<List<Job>>> GetJobs([FromQuery] PaginationDto pagination)
         {
-            //Attempts to return dbset
+            // Gets data from context
             var jobs = _context.Jobs.Include(q=>q.QuoteRevisions)
                 .Include(j=>j.JobRevisions)
                 .Include(p=>p.Project)
-                .ThenInclude(c=>c.Customer);
+                .ThenInclude(c=>c.Customer)
+                .AsQueryable();
 
-            //If successfull request
-            if (jobs != null)
-            {
-                return Ok(jobs);
-            }
-
-            //Could not connect to data context
-            else
-            {
-                return BadRequest();
-            }
+            // Paginates the list of data
+            await HttpContext.InsertPaginationParameterInResponse(jobs, pagination.QuantityPerPage);
+            var item = await jobs.Paginate(pagination).ToListAsync();
+            return Ok(item);
         }
 
         [HttpGet("[action]")]

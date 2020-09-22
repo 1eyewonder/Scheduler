@@ -1,0 +1,168 @@
+﻿@page "/jobs"
+
+@inject IJobsViewModel JobsViewModel
+@inject IEditJobViewModel EditJobViewModel
+@inject IMatToaster Toaster
+
+@attribute [Authorize]
+
+<style>
+    .mdc-table{
+        width:100%;
+        height:auto;
+    }
+
+    .mdc-table th, .mdc-table td{
+       text-align:center;
+       height:auto;
+       width:auto;
+       white-space:nowrap;      
+       overflow:hidden;
+       text-overflow:ellipsis;
+    }
+    .mdc-dialog .mdc-dialog__surface{
+        max-width:none;
+        padding:2% 10%;
+    }
+    .row{
+        margin-left:0;
+    }
+
+</style>
+
+<MatH2>Jobs</MatH2>
+
+@if (JobsViewModel.ErrorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        <MatBody2>@JobsViewModel.ErrorMessage</MatBody2>
+    </div>
+}
+
+<div class="row">
+    <MatButton Outlined="true" OnClick="AddJob">Add Job</MatButton>
+    <MatButton Outlined="true" OnClick="JobsViewModel.Refresh">Refresh</MatButton>
+</div>
+
+@if (JobsViewModel.IsRunning == true)
+{
+    <MatBody1>Loading...</MatBody1>
+}
+else
+{
+    <MatTable Items="JobsViewModel.JobList" Striped="true" PageSize="10" ShowPaging="false">
+        <MatTableHeader>
+            <th>Quote Number</th>
+            <th>Quote Revision</th>
+            <th>Job Number</th>
+            <th>Job Revision</th>
+            <th>Project Name</th>
+            <th>Project Number</th>
+            <AuthorizeView Roles="1,2">
+                <Authorized>
+                    <th>Edit Job</th>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Roles="2">
+                <Authorized>
+                    <th>Delete Job</th>
+                </Authorized>
+            </AuthorizeView>
+        </MatTableHeader>
+        <MatTableRow>
+            @{ var job = context;}
+            <td>@job.QuoteNumber</td>
+
+            <td>@job.QuoteRevisions.FirstOrDefault().RevisionNumber</td>
+            @if (job.JobNumber != null)
+                {
+                <td>@job.JobNumber</td>
+                }
+                else
+                {
+                <td>...</td>
+                }
+
+            @if (job.JobRevisions.Count > 0)
+                {
+                <td>@job.JobRevisions.FirstOrDefault().RevisionNumber</td>
+                }
+                else
+                {
+                <td>...</td>
+                }
+
+            @if (job.Project != null)
+                {
+                <td>@job.Project.Name</td>
+                <td>@job.Project.Number</td>
+                }
+                else
+                {
+                <td>...</td>
+                <td>...</td>
+                }
+            <td>
+                <MatButton OnClick="@(()=>EditJobViewModel.OpenEditDialog(job))">Edit</MatButton>
+            </td>
+            <td>
+                <MatButton OnClick="@(()=>JobsViewModel.OpenDeleteDialog(job.Id))">Delete</MatButton>
+            </td>
+        </MatTableRow>
+
+    </MatTable>
+
+    <Pagination TotaPagesQuantity="JobsViewModel.TotalPageQuantity" CurrentPage="JobsViewModel.CurrentPage" Radius="2"
+                SelectedPage="JobsViewModel.SelectedPage"></Pagination>
+
+    #region EditJobModal
+    <MatDialog @bind-IsOpen="EditJobViewModel.EditDialogIsOpen">
+        <MatDialogTitle>Edit Job</MatDialogTitle>
+        <MatDialogContent>
+            <EditForm Model="@EditJobViewModel.JobDto" OnValidSubmit="@EditJobViewModel.SaveChanges">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <MatTextField Outlined="true" @bind-Value="EditJobViewModel.JobDto.QuoteNumber" Label="Quote Number" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                <MatTextField Outlined="true" @bind-Value="EditJobViewModel.JobDto.JobNumber" Label="Job Number" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                <MatSelect Class="in-modal" Label="Select a Project" @bind-Value="EditJobViewModel.JobDto.ProjectId" ValidationDisabled="true">
+                    @{
+                            var uniqueProjects = EditJobViewModel.Projects.Select(n => new { n.Name, n.Id }).Distinct().ToList();
+                            foreach (var project in uniqueProjects)
+                            {
+                            <MatOption TValue="int?" Value="@project.Id">@project.Name</MatOption>
+                            }
+                    }
+                </MatSelect>
+
+                <MatButton Type="Primary">Save Changes</MatButton>
+            </EditForm>
+
+            <MatButton @onclick="@EditJobViewModel.Cancel"> Cancel</MatButton>
+        </MatDialogContent>
+    </MatDialog>
+    #endregion
+
+    #region DeleteJobModal
+    <MatDialog @bind-IsOpen="JobsViewModel.DeleteDialogIsOpen">
+        <MatDialogTitle>Confirm Delete</MatDialogTitle>
+        <MatBody2>Are you sure you would like to delete this job?</MatBody2>
+        <MatButton OnClick="JobsViewModel.DeleteEntity">Confirm</MatButton>
+        <MatButton OnClick="JobsViewModel.CancelDelete">Cancel</MatButton>
+    </MatDialog>
+    #endregion
+}
+
+@code{
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JobsViewModel.Initialization;
+    }
+
+    private async Task AddJob()
+    {
+        await JobsViewModel.AddEntity();
+        Toaster.Add("New job added successfully", MatToastType.Success, "Add Job");
+    }
+}

@@ -3,7 +3,17 @@
 @using SchedulerUI.ViewModels.Interfaces
 @inject ILoginViewModel vm
 
-<h2>Have a nice day :)</h2>
+<style>
+    .mat-h2 {
+        text-align: center;
+        margin: 10% 0%;
+    }
+    p{
+        text-align:center;
+    }
+</style>
+
+<MatH2 Class="mat-h2">Have a nice day :)</MatH2>
 <p>
     You have logged out. To sign back in, click <a href="Login">here</a>
 </p>

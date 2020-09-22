@@ -6,23 +6,11 @@ using System.Threading.Tasks;
 
 namespace SchedulerUI.ViewModels.Interfaces
 {
-    public interface IJobsViewModel : IAsyncInitialization
+    public interface IJobsViewModel : IAsyncInitialization, IViewModelState, IPaginate, IEntityManagement
     {
         /// <summary>
         /// List of jobs in the database
         /// </summary>
         public List<Job> JobList { get; set; }
-
-        /// <summary>
-        /// Refreshes data sources
-        /// </summary>
-        /// <returns></returns>
-        Task Refresh();
-
-        /// <summary>
-        /// Shows Edit Job form for the given job
-        /// </summary>
-        /// <returns></returns>
-        Task ShowEditJob(int jobId);
     }
 }

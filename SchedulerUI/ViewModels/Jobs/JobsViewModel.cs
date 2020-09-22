@@ -1,26 +1,25 @@
-﻿using Blazored.Modal;
-using Blazored.Modal.Services;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
+using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
 using SchedulerUI.Pages;
-using SchedulerUI.Pages.Jobs;
 using SchedulerUI.Services.Interfaces;
 using SchedulerUI.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace SchedulerUI.ViewModels.Jobs
 {
-    public sealed class JobsViewModel : IJobsViewModel, IViewModelState
+    public sealed class JobsViewModel : IJobsViewModel
     {
 
         #region Fields
-        private readonly IUserService _userService;
         private readonly IJobService _jobService;
-        private readonly NavigationManager _navigation;
-        private readonly IModalService _modal;
+        private int _currentJobId;
         #endregion
 
         #region Properties
@@ -28,21 +27,22 @@ namespace SchedulerUI.ViewModels.Jobs
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public Task Initialization { get; private set; }
+        public int TotalPageQuantity { get; set; }
+        public int CurrentPage { get; set; }
+        public string NewJobNumber { get; set; }
+        public bool DeleteDialogIsOpen { get; set; }
         #endregion
 
-        public JobsViewModel(IUserService userService, IJobService jobService,
-            NavigationManager navigation, IModalService modal)
+        public JobsViewModel(IJobService jobService)
         {
             //Injects services
-            _userService = userService;
             _jobService = jobService;
-            _navigation = navigation;
-            _modal = modal;
 
             //Initialize
             JobList = new List<Job>();
             ErrorMessage = null;
             IsRunning = false;
+            CurrentPage = 1;
 
             //Retrieves data async
             Initialization = InitializeAsync();
@@ -54,59 +54,156 @@ namespace SchedulerUI.ViewModels.Jobs
         /// <returns></returns>
         private async Task InitializeAsync()
         {
-            JobList = await GetJobs();
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
+
+            //Get jobs from database
+            try
+            {
+                JobList = await GetJobs();
+            }
+            catch (Exception e)
+            {
+                ErrorMessage = e.ToString();
+            }
+
+            //Re-enables actions
+            IsRunning = false;
+        }
+
+        public async Task SelectedPage(int page)
+        {
+            CurrentPage = page;
+            JobList = await GetJobs(10, page);
         }
 
         /// <summary>
         /// Gets list of jobs from the database
         /// </summary>
         /// <returns></returns>
-        private async Task<List<Job>> GetJobs()
+        private async Task<List<Job>> GetJobs(int recordsPerPage = 10, int pageNumber = 1)
         {
-            var jobs = await _jobService.GetJobs();
-            return jobs;
+            var response = await _jobService.GetJobs(recordsPerPage, pageNumber);
+            TotalPageQuantity = response.TotalPagesQuantity;
+            return response.Items;
         }
 
         public async Task Refresh()
         {
-            JobList = await GetJobs();
-        }
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
 
-        public async Task ShowEditJob(int jobId)
-        {
-            //Adds parameters to pass into modal
-            var parameters = new ModalParameters();
-            parameters.Add(nameof(EditJob.Id), jobId);
-
-            //Set modal options
-            var options = new ModalOptions()
-            {
-                HideCloseButton = false,
-                DisableBackgroundCancel = true
-            };
-
+            //Get jobs from database
             try
             {
-                //Shows modal and awaits user input
-                var modalForm = _modal.Show<EditJob>("Edit Job", parameters, options);
-                var result = await modalForm.Result;
-
-                //If user cancels edit
-                if (result.Cancelled)
-                {
-
-                }
-
-                //Refreshes data with update
-                else
-                {
-                    await Refresh();
-                }
+                JobList = await GetJobs(10, CurrentPage);
             }
             catch (Exception e)
             {
-                Console.Write(e.ToString());
-            }
+                ErrorMessage = e.ToString();
+            }            
+
+            //Re-enables actions
+            IsRunning = false;
         }
+
+        /// <summary>
+        /// Adds a job to the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task AddEntity()
+        {
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
+
+            // Creates new random quote number
+            var job = new JobDto()
+            {
+                // Creates random 8 digit number until logic is added later
+                QuoteNumber = new Random().Next(10000000, 99999999).ToString()
+            };
+
+            NewJobNumber = job.QuoteNumber;
+
+            // Adds job to database
+            try
+            {               
+                var response = await _jobService.AddJob(job);
+
+                // If post is successful
+                if (response.IsSuccessStatusCode)
+                {
+                    await Refresh();
+                }
+                else
+                {
+                    ErrorMessage = response.ReasonPhrase;
+                }
+                
+            }
+            catch (Exception e)
+            {
+                ErrorMessage = e.ToString();
+            }
+
+            //Re-enables actions
+            IsRunning = false;
+        }
+
+        public void OpenDeleteDialog(int entityId)
+        {
+            DeleteDialogIsOpen = true;
+            _currentJobId = entityId;
+        }
+
+        /// <summary>
+        /// Deletes specified job from the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task DeleteEntity()
+        {
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
+
+            try
+            {
+                //Attempts to update job in the database
+                var response = await _jobService.DeleteJob(_currentJobId);
+
+                //If http call was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    DeleteDialogIsOpen = false;
+                    await Refresh();
+                }
+
+                //If http call was not successful
+                else
+                {
+                    ErrorMessage = response.Content.ReadAsAsync<HttpError>().Result.ToString();
+                }
+            }
+
+            //If other error occurred
+            catch (Exception e)
+            {
+                ErrorMessage = e.ToString();
+            }
+
+            //Re-enables actions
+            IsRunning = false;
+        }
+
+        public void CancelDelete()
+        {
+            IsRunning = false;
+            ErrorMessage = null;
+            DeleteDialogIsOpen = false;
+        }
+
     }
 }

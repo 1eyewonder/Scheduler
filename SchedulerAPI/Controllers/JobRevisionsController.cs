@@ -1,9 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SchedulerAPI.Data;
+using SchedulerAPI.Dtos;
+using SchedulerAPI.Helpers;
 using SchedulerAPI.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SchedulerAPI.Controllers
 {
@@ -18,14 +23,16 @@ namespace SchedulerAPI.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<JobRevision>>> GetJobRevisions([FromQuery] PaginationDto pagination)
         {
-            var jobRevs = _context.JobRevisions;
+            // Gets data from context
+            var jobRevs = _context.JobRevisions.AsQueryable();
 
-            if (jobRevs == null) return BadRequest();
-
-            return Ok(jobRevs);
+            // Paginates the list of data
+            await HttpContext.InsertPaginationParameterInResponse(jobRevs, pagination.QuantityPerPage);
+            var item = await jobRevs.Paginate(pagination).ToListAsync();
+            return Ok(item);
         }
 
         [HttpGet("{id}")]

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
+using SchedulerUI.Dtos;
 using SchedulerUI.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -28,10 +29,13 @@ namespace SchedulerUI.Services
 
         public async Task<Project> GetProject(int id)
         {
+            // Attempts to get project data from database
             var response = await _httpClient.GetAsync("projects/" + id);
 
+            // If response is successful
             if (response.IsSuccessStatusCode)
             {
+                // Gets object from response and returns it
                 var project = JsonConvert.DeserializeObject<Project>(response.Content.ReadAsStringAsync().Result);
                 return project;
             }
@@ -41,14 +45,26 @@ namespace SchedulerUI.Services
             }
         }
 
-        public async Task<List<Project>> GetProjects()
+        public async Task<PaginationResponseDto<Project>> GetProjects(int recordsPerPage = 10, int pageNumber = 1)
         {
-            var response = await _httpClient.GetAsync("projects/");
+            // Awaits response from database
+            var response = await _httpClient.GetAsync($"projects/GetProjects?quantityPerPage={recordsPerPage}&page={pageNumber}");
 
+            // If successful
             if (response.IsSuccessStatusCode)
             {
+                var totalPageQuantity = int.Parse(response.Headers.GetValues("pagesQuantity").FirstOrDefault());
                 var projects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-                return projects;
+
+                // Creates dto from response
+                var paginationResponse = new PaginationResponseDto<Project>()
+                {
+                    TotalPagesQuantity = totalPageQuantity,
+                    Items = projects
+                };
+
+                // Returns dto
+                return paginationResponse;
             }
             else
             {
@@ -62,6 +78,28 @@ namespace SchedulerUI.Services
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync("projects/" + project.Id, data);
 
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> AddProject(ProjectDto project)
+        {
+            // Converts user object to json for http post
+            var json = JsonConvert.SerializeObject(project);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // Calls web api job post
+            var response = await _httpClient.PostAsync("projects/", data);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> DeleteProject(int projectId)
+        {
+
+            // Attempts to delete job from database
+            var response = await _httpClient.DeleteAsync($"projects/{projectId}");
+
+            // Returns response
             return response;
         }
     }

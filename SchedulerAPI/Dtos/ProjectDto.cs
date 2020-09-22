@@ -11,7 +11,7 @@ namespace SchedulerAPI.Dtos
     {
         [Key]
         [Required]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(15)]
@@ -25,6 +25,6 @@ namespace SchedulerAPI.Dtos
         public string Number { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
     }
 }

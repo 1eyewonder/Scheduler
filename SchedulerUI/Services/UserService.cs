@@ -36,18 +36,20 @@ namespace SchedulerUI.Services
         /// <returns></returns>
         public async Task<HttpResponseMessage> Login(UserLoginDto userLogin)
         {
-            // Sends user info to api and awaits response
+            // Converts user object to json for http post
             var json = JsonConvert.SerializeObject(userLogin);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // Calls web api login
+            // Calls web api login post
             var response = await _httpClient.PostAsync("users/login", data);
+
+            // If successful response
             if (response.IsSuccessStatusCode)
             {
-                //Gets authentication information back from api
+                // Gets authentication information back from api
                 var userInfo = JsonConvert.DeserializeObject<AuthenticationDto>(response.Content.ReadAsStringAsync().Result);
 
-                //Stores token to local storage and reports to user success
+                // Stores token to local storage and reports to user success
                 await _storageService.SetItemAsync("User", userInfo);
                 IsLoggedIn = true;
 

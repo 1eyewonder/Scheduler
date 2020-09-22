@@ -1,11 +1,28 @@
 ﻿@page "/login"
 
-@using Syncfusion.Blazor.Inputs
-@using Syncfusion.Blazor.Buttons
-
 @inject ILoginViewModel vm
 
-<h1>Log In</h1>
+<style>
+    .card{
+        justify-content:center;
+        width: auto;
+        margin: 5% 30%;
+    }
+
+    .mat-h2{
+        text-align:center;
+        margin-top: 10%;
+    }
+
+    .mat-h5{
+        text-align: center;
+        margin-bottom: 5%
+    }
+    
+</style>
+
+
+<MatH2 Class="mat-h2">Log In</MatH2>
 
 @if (vm.ErrorMessage != null)
 {
@@ -16,27 +33,22 @@
 <div class="card">
     <div class="card-body">
 
-        <h5 class="card-title">Please log in using your account information</h5>
+        <MatH5 Class="mat-h5">Please log in using your account information</MatH5>
 
         <EditForm Model="vm.UserLogin" OnValidSubmit="vm.Login">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="form-group">
-                <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
-                    <SfTextBox Placeholder="Username" FloatLabelType="@FloatLabelType.Auto" Id="username" @bind-Value="vm.UserLogin.Name"></SfTextBox>
-                </div>
-                <ValidationMessage For="@(() => vm.UserLogin.Name)" />
+            <ValidationMessage For="@(() => vm.UserLogin.Name)" />
+            <MatTextField Outlined="true" @bind-Value="vm.UserLogin.Name" Label="Username" ValidationDisabled="true" FullWidth="true"></MatTextField>
+
+            <ValidationMessage For="@(() => vm.UserLogin.Password)" />
+            <MatTextField Outlined="true" @bind-Value="vm.UserLogin.Password" Label="Password" ValidationDisabled="true" FullWidth="true" Type="password"></MatTextField>
+
+            <div style="text-align:center;">
+                <MatButton Type="Primary" Disabled="vm.IsRunning" Outlined="true">Login</MatButton>
             </div>
-            <div class="form-group">
-                <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
-                    <SfTextBox Placeholder="Password" FloatLabelType="@FloatLabelType.Auto" Id="password" @bind-Value="vm.UserLogin.Password" Type="InputType.Password"></SfTextBox>
-                </div>
-                <ValidationMessage For="@(() => vm.UserLogin.Password)" />
-            </div>
-            <div class="col-xs-12 col-sm-12 col-lg-6 col-md-6">
-                <SfButton IsPrimary="true" Disabled="vm.IsRunning">Login</SfButton>
-            </div>
+            
         </EditForm>
     </div>
 </div>

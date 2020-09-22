@@ -26,7 +26,7 @@ namespace SchedulerAPI.Dtos
         public string JobNumber { get; set; }
 
 
-        public int ProjectId { get; set; }
+        public int? ProjectId { get; set; }
 
     }
 }

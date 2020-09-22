@@ -1,62 +1,133 @@
 ﻿@page "/projects"
 
-@using Syncfusion.Blazor.Buttons
-
-@inject IProjectsViewModel vm
+@inject IProjectsViewModel ProjectsViewModel
+@inject IEditProjectViewModel EditProjectViewModel
+@inject IMatToaster Toaster
 
 @attribute [Authorize(Roles = "1,2")]
 
-<h3>Projects</h3>
+<style>
+    .mdc-table {
+        width: 100%;
+        height: auto;
+    }
+
+        .mdc-table th, .mdc-table td {
+            text-align: center;
+            width: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .mdc-dialog .mdc-dialog__surface {
+        max-width: none;
+        padding: 2% 10%;
+    }
+    .row {
+        margin-left: 0;
+    }
+</style>
+
+<MatH2>Projects</MatH2>
+
+@if (ProjectsViewModel.ErrorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        <MatBody2>@ProjectsViewModel.ErrorMessage</MatBody2>
+    </div>
+}
 
 <div class="row">
-    <SfButton IsPrimary="true" CssClass="e-small">Add Project</SfButton>
-    <SfButton IsPrimary="true" CssClass="e-small" OnClick="vm.Refresh">Refresh</SfButton>
+    <MatButton Outlined="true" OnClick="AddProject">Add Project</MatButton>
+    <MatButton Outlined="true" OnClick="ProjectsViewModel.Refresh">Refresh</MatButton>
 </div>
 
-@if (vm.ProjectList == null)
+@if (ProjectsViewModel.IsRunning == true)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table table-striped">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Number</th>
-                <th>Customer</th>
-                <th>Edit Project</th>
-                <AuthorizeView Roles="2">
-                    <Authorized>
-                        <th>Delete Project</th>
-                    </Authorized>
-                </AuthorizeView>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var project in vm.ProjectList)
-            {
-            <tr>
-                <td>@project.Name</td>
-                <td>@project.Number</td>
-                <td>@project.Customer.Name</td>
+    <MatTable Items="ProjectsViewModel.ProjectList" Striped="true" PageSize="10" ShowPaging="false">
+        <MatTableHeader>
+            <th>Name</th>
+            <th>Number</th>
+            <th>Customer</th>
+            <th>Edit Project</th>
+            <AuthorizeView Roles="2">
+                <Authorized>
+                    <th>Delete Project</th>
+                </Authorized>
+            </AuthorizeView>
+        </MatTableHeader>
 
-                <td>
-                    <SfButton CssClass="e-small">Edit</SfButton>
-                </td>
-                <td>
-                    <SfButton CssClass="e-small">Delete</SfButton>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
+        <MatTableRow>
+            @{var project = context;}
+            <td>@project.Name</td>
+            <td>@project.Number</td>
+            <td>@project.Customer.Name</td>
+            <td>
+                <MatButton OnClick="()=>EditProjectViewModel.OpenEditDialog(project)">Edit</MatButton>
+            </td>
+            <td>
+                <MatButton OnClick="()=>ProjectsViewModel.OpenDeleteDialog(project.Id)">Delete</MatButton>
+            </td>
+        </MatTableRow>
+
+    </MatTable>
+
+    <Pagination TotaPagesQuantity="ProjectsViewModel.TotalPageQuantity" CurrentPage="ProjectsViewModel.CurrentPage" Radius="2"
+                SelectedPage="ProjectsViewModel.SelectedPage"></Pagination>
+
+    #region EditProjectModal
+    <MatDialog @bind-IsOpen="EditProjectViewModel.EditDialogIsOpen">
+        <MatDialogTitle>Edit Project</MatDialogTitle>
+        <MatDialogContent>
+            <EditForm Model="@EditProjectViewModel.ProjectDto" OnValidSubmit="@EditProjectViewModel.SaveChanges">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Name" Label="Project Name" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Number" Label="Project Number" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                <MatSelect Class="in-modal" Label="Select a Customer" @bind-Value="EditProjectViewModel.ProjectDto.CustomerId" ValidationDisabled="true">
+                    @{
+                            var uniqueCustomers = EditProjectViewModel.Customers.Select(n => new { n.Name, n.Id }).Distinct().ToList();
+                            foreach (var customer in uniqueCustomers)
+                            {
+                            <MatOption TValue="int?" Value="@customer.Id">@customer.Name</MatOption>
+                            }
+                    }
+                </MatSelect>
+
+                <MatButton Type="Primary">Save Changes</MatButton>
+            </EditForm>
+
+            <MatButton @onclick="@EditProjectViewModel.Cancel"> Cancel</MatButton>
+        </MatDialogContent>
+    </MatDialog>
+    #endregion
+
+    #region DeleteProjectModal
+    <MatDialog @bind-IsOpen="ProjectsViewModel.DeleteDialogIsOpen">
+        <MatDialogTitle>Confirm Delete</MatDialogTitle>
+        <MatBody2>Are you sure you would like to delete this job?</MatBody2>
+        <MatButton OnClick="ProjectsViewModel.DeleteEntity">Confirm</MatButton>
+        <MatButton OnClick="ProjectsViewModel.CancelDelete">Cancel</MatButton>
+    </MatDialog>
+    #endregion
 }
 
 @code {
 
     protected override async Task OnInitializedAsync()
     {
-        await vm.Initialization;
+        await ProjectsViewModel.Initialization;
+    }
+
+    private async Task AddProject()
+    {
+        await ProjectsViewModel.AddEntity();
+        Toaster.Add("New project added successfully", MatToastType.Success, "Add Project");
     }
 }

@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using SchedulerUI.Pages.UserManagement
 
+
 <AuthorizeView>
     <div class="sidebar">
         <NavMenu />
@@ -10,7 +11,7 @@
 
 <div class="main">
     <div class="top-row px-4">
-        <LoginDisplay/>
+        <LoginDisplay />
         <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
     </div>
 
@@ -18,4 +19,21 @@
         @Body
     </div>
 </div>
+
+
+@*<style>
+    .sidebar {
+        background: #000000 !important;
+    }
+</style>
+
+
+@code{
+    MatTheme theme1 = new MatTheme()
+    {
+        Primary = "#d500f9",
+        Secondary = "#212121"
+    };
+
+}*@
 

@@ -1,5 +1,5 @@
 ﻿
-<div class="top-row pl-4 navbar navbar-dark">
+@*<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href=""> Symbiotic Scheduling</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -28,15 +28,18 @@
             </Authorized>           
         </AuthorizeView>       
     </ul>
-</div>
+</div>*@
 
-@code {
-    private bool collapseNavMenu = true;
+<MatNavMenu>
+    <MatNavItem Class="top-row pl-4 navbar navbar-dark" Style="color:white">Symbiotic Scheduling</MatNavItem>
+    <MatNavItem Href="" Style="color:white; align-self:end">
+        <MatIcon Icon="home"></MatIcon>&nbsp; Home
+    </MatNavItem>
+    <MatNavItem Href="jobs" Style="color:white">
+        <MatIcon Icon="store"></MatIcon>&nbsp; Jobs
+    </MatNavItem>
+    <MatNavItem Href="projects" Style="color:white">
+        <MatIcon Icon="work_outline"></MatIcon>&nbsp; Projects
+    </MatNavItem>
+</MatNavMenu>
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}

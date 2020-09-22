@@ -1,7 +1,6 @@
 using AutoMapper;
 using Blazored.LocalStorage;
-using Blazored.Modal;
-using Blazored.Modal.Services;
+using MatBlazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +15,6 @@ using SchedulerUI.ViewModels.Interfaces;
 using SchedulerUI.ViewModels.Jobs;
 using SchedulerUI.ViewModels.Projects;
 using SchedulerUI.ViewModels.UserManagement;
-using Syncfusion.Blazor;
 using System.Net.Http;
 
 namespace SchedulerUI
@@ -40,9 +38,16 @@ namespace SchedulerUI
 
             //Nuget services
             services.AddBlazoredLocalStorage();
-            services.AddSyncfusionBlazor();
-            services.AddBlazoredModal();
-            services.AddScoped<IModalService, ModalService>();
+
+            services.AddMatToaster(config =>
+            {
+                config.Position = MatToastPosition.BottomRight;
+                config.PreventDuplicates = true;
+                config.NewestOnTop = true;
+                config.ShowCloseButton = true;
+                config.MaximumOpacity = 95;
+                config.VisibleStateDuration = 3000;
+            });
 
             //Automapper profiles
             services.AddAutoMapper(typeof(SchedulerProfile)); //profile found in api
@@ -53,12 +58,14 @@ namespace SchedulerUI
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddScoped<IJobService, JobService>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ICustomerService, CustomerService>();
 
             //ViewModel services
             services.AddScoped<ILoginViewModel, LoginViewModel>();
             services.AddScoped<IJobsViewModel, JobsViewModel>();
             services.AddScoped<IEditJobViewModel, EditJobViewModel>();
             services.AddScoped<IProjectsViewModel, ProjectsViewModel>();
+            services.AddScoped<IEditProjectViewModel, EditProjectViewModel>();
            
             //Http services
             services.AddSingleton<HttpClient>();
@@ -66,10 +73,7 @@ namespace SchedulerUI
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            //Register Syncfusion license
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjg5NjIwQDMxMzgyZTMyMmUzMGpuQjV6OWVYUDJINGRuYUJ2NTE2YUJrb2hRS2RIYnI2WDFXZkRvRHhjbW89");
-
+        {         
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

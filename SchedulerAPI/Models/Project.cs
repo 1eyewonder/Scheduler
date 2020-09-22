@@ -15,7 +15,7 @@ namespace SchedulerAPI.Models
     {
         [Key]
         [Required]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(15)]
@@ -30,7 +30,7 @@ namespace SchedulerAPI.Models
 
         [Required]
         [ForeignKey("Customer")]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
         [Required]
         public Customer Customer { get; set; } 
     }

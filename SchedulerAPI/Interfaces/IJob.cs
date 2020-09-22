@@ -15,6 +15,6 @@ namespace SchedulerAPI.Interfaces
 
         string JobNumber { get; set; }
 
-        int ProjectId { get; set; }
+        int? ProjectId { get; set; }
     }
 }

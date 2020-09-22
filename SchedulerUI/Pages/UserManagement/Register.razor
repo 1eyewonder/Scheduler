@@ -1,11 +1,30 @@
 ﻿@page "/register"
 
-@using Syncfusion.Blazor.Inputs
-
-@using SchedulerUI.ViewModels.Interfaces
 @inject ILoginViewModel vm
 
-<h1>Register</h1>
+    <style>
+        .card {
+            justify-content: center;
+            width: auto;
+            margin: 5% 30%;
+        }
+
+        .mat-h2 {
+            text-align:center;
+            margin-top: 10%;
+        }
+
+        .mat-h5 {
+            text-align: center;
+            margin-bottom: 5%
+        }
+        .mat-button{
+            width:20%;
+            margin: 2% 40%;
+        }
+    </style>
+
+<MatH2 Class="mat-h2">Register</MatH2>
 
 @if (vm.ErrorMessage != null)
 {
@@ -16,36 +35,25 @@
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">Please enter your details</h5>
+        <MatH5 Class="card-title">Please enter your details</MatH5>
         <EditForm Model="vm.User" OnValidSubmit="vm.Register">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="form-group">
-                @*<label for="email">Username</label>*@
-                @*<InputText Id="email" class="form-control" @bind-Value="user.Name" />*@
-                <SfTextBox Placeholder="Username" FloatLabelType="@FloatLabelType.Auto" Id="username" @bind-Value="vm.User.Name"></SfTextBox>
-                <ValidationMessage For="@(() => vm.User.Name)" />
-            </div>
-            <div class="form-group">
-                @*<label for="email">Email address</label>
-                    <InputText Id="email" class="form-control" @bind-Value="user.Email" />*@
-                <SfTextBox Placeholder="Email" FloatLabelType="@FloatLabelType.Auto" Id="email" @bind-Value="vm.User.Email" Type="InputType.Email"></SfTextBox>
-                <ValidationMessage For="@(() => vm.User.Email)" />
-            </div>
-            <div class="form-group">
-                @*<label for="password">Password</label>
-                    <InputText Id="password" type="password" class="form-control" @bind-Value="vm.User.Password" />*@
-                <SfTextBox Placeholder="Password" FloatLabelType="@FloatLabelType.Auto" Id="password" @bind-Value="vm.User.Password" Type="@InputType.Password"></SfTextBox>
-                <ValidationMessage For="@(() => vm.User.Password)" />
-            </div>
-            <div class="form-group">
-                @*<label for="confirmPassword">Confirm Password</label>
-                    <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="confirmPassword" />*@
-                <SfTextBox Placeholder="Confirm password" FloatLabelType="@FloatLabelType.Auto" Id="confirmPassword" @bind-Value="@vm.ConfirmPassword" Type="InputType.Password"></SfTextBox>
-                <ValidationMessage For="@(() => vm.ConfirmPassword)" />
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <ValidationMessage For="@(() => vm.User.Name)" />
+            <MatTextField Outlined="true" @bind-Value="vm.User.Name" Label="Username" ValidationDisabled="true" FullWidth="true"></MatTextField>
+
+            <ValidationMessage For="@(() => vm.User.Email)" />
+            <MatTextField Outlined="true" @bind-Value="vm.User.Email" Label="Email" ValidationDisabled="true" FullWidth="true"></MatTextField>
+
+            <ValidationMessage For="@(() => vm.User.Password)" />
+            <MatTextField Outlined="true" @bind-Value="vm.User.Password" Label="Password" ValidationDisabled="true" Type="password" FullWidth="true"></MatTextField>
+
+            <ValidationMessage For="@(() => vm.ConfirmPassword)" />
+            <MatTextField Outlined="true" @bind-Value="vm.ConfirmPassword" Label="Confirm Password" ValidationDisabled="true" Type="password" FullWidth="true"></MatTextField>
+
+            <MatButton Type="submit" Disabled="vm.IsRunning">Submit</MatButton>
+            
         </EditForm>
     </div>
 </div>

@@ -1,5 +1,4 @@
-﻿using Blazored.Modal;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
 using System;
@@ -14,8 +13,6 @@ namespace SchedulerUI.ViewModels.Interfaces
         public JobDto JobDto { get; set; }
         public Job Job { get; set; }
         public List<Project> Projects { get; set; }
-        public int StartingIndex { get; set; }
-        BlazoredModalInstance BlazoredModalInstance { get; set; }
-
+        Task OpenEditDialog(Job job);
     }
 }

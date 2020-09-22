@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchedulerAPI.Data;
 using SchedulerAPI.Dtos;
+using SchedulerAPI.Helpers;
 using SchedulerAPI.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SchedulerAPI.Controllers
 {
@@ -25,12 +28,17 @@ namespace SchedulerAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [AllowAnonymous]
-        public IActionResult Get()
+        public async Task<ActionResult<List<Project>>> GetProjects([FromQuery] PaginationDto pagination)
         {
-            //Returns project dbcontext
-            return Ok(_context.Projects.Include(c=>c.Customer));
+            // Gets data from context
+            var projects = _context.Projects.Include(c => c.Customer).AsQueryable();
+
+            // Paginates the list of data
+            await HttpContext.InsertPaginationParameterInResponse(projects, pagination.QuantityPerPage);
+            var item = await projects.Paginate(pagination).ToListAsync();
+            return Ok(item);
         }
 
         [HttpGet("{id}")]
@@ -115,13 +123,29 @@ namespace SchedulerAPI.Controllers
                 return BadRequest("There is no record of this id");
             }
 
+            //Removes reference to this project if job is part of the project
+            var jobsWithThisProject = _context.Jobs.Where(p => p.ProjectId == project.Id);
+            foreach (var job in jobsWithThisProject)
+            {
+                job.ProjectId = null;
+                job.Project = null;
+            }
+
             //Removes entry
             _context.Projects.Remove(project);
 
-            //Save changes
-            _context.SaveChanges();
+            try
+            {
+                //Save changes
+                _context.SaveChanges();
 
-            return Ok("Role successfully deleted");
+                return Ok("Role successfully deleted");
+            }
+            
+            catch (Exception e)
+            {
+                throw new ArgumentException(e.ToString());
+            }           
         }
     }
 }

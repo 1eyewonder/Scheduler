@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
-using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
 using SchedulerUI.Dtos;
 using SchedulerUI.Services.Interfaces;
@@ -12,17 +10,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace SchedulerUI.Services
 {
-    public class JobService : IJobService
+    public class CustomerService : ICustomerService
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _storageService;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        public JobService(HttpClient httpClient,
+        public CustomerService(HttpClient httpClient,
             ILocalStorageService storageService,
             AuthenticationStateProvider authenticationStateProvider)
         {
@@ -30,23 +27,22 @@ namespace SchedulerUI.Services
             _storageService = storageService;
             _authenticationStateProvider = authenticationStateProvider;
         }
-
-        public async Task<PaginationResponseDto<Job>> GetJobs(int recordsPerPage = 10, int pageNumber = 1)
+        public async Task<PaginationResponseDto<Customer>> GetCustomers(int recordsPerPage = 10, int pageNumber = 1)
         {
             // Awaits response from database
-            var response = await _httpClient.GetAsync($"Jobs/GetJobs?quantityPerPage={recordsPerPage}&page={pageNumber}");
+            var response = await _httpClient.GetAsync($"Customers/GetCustomers?quantityPerPage={recordsPerPage}&page={pageNumber}");
 
             // If successful
             if (response.IsSuccessStatusCode)
             {
                 var totalPageQuantity = int.Parse(response.Headers.GetValues("pagesQuantity").FirstOrDefault());
-                var jobs = JsonConvert.DeserializeObject<List<Job>>(response.Content.ReadAsStringAsync().Result);
+                var customers = JsonConvert.DeserializeObject<List<Customer>>(response.Content.ReadAsStringAsync().Result);
 
                 // Creates dto from response
-                var paginationResponse = new PaginationResponseDto<Job>()
+                var paginationResponse = new PaginationResponseDto<Customer>()
                 {
                     TotalPagesQuantity = totalPageQuantity,
-                    Items = jobs
+                    Items = customers
                 };
 
                 // Returns dto
@@ -57,52 +53,50 @@ namespace SchedulerUI.Services
                 return null;
             }
         }
-
-        public async Task<Job> GetJob(int id)
+        public async Task<Customer> GetCustomer(int id)
         {
             // Attempts to get project data from database
-            var response = await _httpClient.GetAsync("jobs/" + id);
+            var response = await _httpClient.GetAsync("customers/" + id);
 
             // If response is successful
             if (response.IsSuccessStatusCode)
             {
-                var job = JsonConvert.DeserializeObject<Job>(response.Content.ReadAsStringAsync().Result);
-                return job;
+                var customer = JsonConvert.DeserializeObject<Customer>(response.Content.ReadAsStringAsync().Result);
+                return customer;
             }
             else
             {
                 return null;
             }
         }
-
-        public async Task<HttpResponseMessage> UpdateJob(JobDto job)
+        public async Task<HttpResponseMessage> UpdateCustomer(Customer customer)
         {
-            var json = JsonConvert.SerializeObject(job);
+            var json = JsonConvert.SerializeObject(customer);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync("jobs/" + job.Id, data);
+            var response = await _httpClient.PutAsync("customers/" + customer.Id, data);
 
             return response;
         }
 
-        public async Task<HttpResponseMessage> AddJob(JobDto job)
+        public async Task<HttpResponseMessage> AddCustomer(Customer customer)
         {
             // Converts user object to json for http post
-            var json = JsonConvert.SerializeObject(job);
+            var json = JsonConvert.SerializeObject(customer);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
             // Calls web api job post
-            var response = await _httpClient.PostAsync("jobs/", data);
+            var response = await _httpClient.PostAsync("customers/", data);
 
             return response;
         }
 
-        public async Task<HttpResponseMessage> DeleteJob(int jobId)
+        public async Task<HttpResponseMessage> DeleteCustomer(int customerId)
         {
             // Attempts to delete job from database
-            var response = await _httpClient.DeleteAsync($"jobs/{jobId}");
+            var response = await _httpClient.DeleteAsync($"customers/{customerId}");
 
             // Returns response
             return response;
-        }
+        }   
     }
 }

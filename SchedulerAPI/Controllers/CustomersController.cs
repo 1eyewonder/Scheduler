@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SchedulerAPI.Data;
 using SchedulerAPI.Dtos;
+using SchedulerAPI.Helpers;
 using SchedulerAPI.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SchedulerAPI.Controllers
 {
@@ -23,12 +27,17 @@ namespace SchedulerAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [AllowAnonymous]
-        public IActionResult Get()
+        public async Task<ActionResult<List<Customer>>> GetCustomers([FromQuery] PaginationDto pagination)
         {
-            //Returns customer dbcontext
-            return Ok(_context.Customers);
+            // Gets data from context
+            var customers = _context.Customers.AsQueryable();
+
+            // Paginates the list of data
+            await HttpContext.InsertPaginationParameterInResponse(customers, pagination.QuantityPerPage);
+            var item = await customers.Paginate(pagination).ToListAsync();
+            return Ok(item);
         }
 
         [HttpGet("{id}")]

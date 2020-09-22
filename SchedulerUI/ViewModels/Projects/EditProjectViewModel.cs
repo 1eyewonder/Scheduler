@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Components;
 using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
-using SchedulerUI.Pages;
 using SchedulerUI.Services.Interfaces;
 using SchedulerUI.ViewModels.Interfaces;
 using System;
@@ -12,41 +10,41 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace SchedulerUI.ViewModels.Jobs
+namespace SchedulerUI.ViewModels.Projects
 {
-    public sealed class EditJobViewModel : IEditJobViewModel
+    public class EditProjectViewModel: IEditProjectViewModel
     {
         #region Fields
-        private readonly IJobService _jobService;
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
-        private readonly IJobsViewModel _jobsViewModel;
+        private readonly IProjectsViewModel _projectsViewModel;
+        private readonly ICustomerService _customerService;
         #endregion
 
         #region Properties
-        public JobDto JobDto { get; set; }
-        public Job Job { get; set; }
-        public List<Project> Projects { get; set; }
+        public ProjectDto ProjectDto { get; set; }
+        public Project Project { get; set; }
+        public List<Customer> Customers { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public bool EditDialogIsOpen { get; set; }
         #endregion
 
-        public EditJobViewModel(IJobService jobService, 
-            IProjectService projectService, 
+        public EditProjectViewModel(IProjectService projectService, 
             IMapper mapper, 
-            IJobsViewModel jobsViewModel)
+            IProjectsViewModel projectsViewModel,
+            ICustomerService customerService)
         {
             //Inject services
-            _jobService = jobService;
             _projectService = projectService;
+            _customerService = customerService;
             _mapper = mapper;
-            _jobsViewModel = jobsViewModel;
+            _projectsViewModel = projectsViewModel;     
 
             //Initialize objects
-            Job = new Job();
-            JobDto = new JobDto();
-            Projects = new List<Project>();
+            Project = new Project();
+            ProjectDto = new ProjectDto();
+            Customers = new List<Customer>();
             IsRunning = false;
             ErrorMessage = null;
             EditDialogIsOpen = false;
@@ -54,19 +52,16 @@ namespace SchedulerUI.ViewModels.Jobs
 
         public async Task InitializeAsync()
         {
-            //Get projects
-            var response = await _projectService.GetProjects();
-            Projects = response.Items;
-            //StartingIndex = Projects.IndexOf(Projects.Where(p => p.Id == JobDto.ProjectId).FirstOrDefault());
+            //Get customers
+            var response = await _customerService.GetCustomers();
+            Customers = response.Items;
         }
-
-       public async Task OpenEditDialog(Job job)
+        public async Task OpenEditDialog(Project project)
         {
             await InitializeAsync();
-            _mapper.Map(job, this.JobDto);
+            _mapper.Map(project, ProjectDto);
             EditDialogIsOpen = true;
         }
-
         public async Task SaveChanges()
         {
             //Disables actions and clears any error messages
@@ -76,13 +71,13 @@ namespace SchedulerUI.ViewModels.Jobs
             try
             {
                 //Attempts to update job in the database
-                var response = await _jobService.UpdateJob(JobDto);
+                var response = await _projectService.UpdateProject(ProjectDto);
 
                 //If http call was successful
                 if (response.IsSuccessStatusCode)
                 {
                     EditDialogIsOpen = false;
-                    await _jobsViewModel.Refresh();
+                    await _projectsViewModel.Refresh();
                 }
 
                 //If http call was not successful
