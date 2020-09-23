@@ -11,6 +11,7 @@ using SchedulerAPI.Profiles;
 using SchedulerUI.Data;
 using SchedulerUI.Services;
 using SchedulerUI.Services.Interfaces;
+using SchedulerUI.ViewModels.Customers;
 using SchedulerUI.ViewModels.Interfaces;
 using SchedulerUI.ViewModels.Jobs;
 using SchedulerUI.ViewModels.Projects;
@@ -66,6 +67,8 @@ namespace SchedulerUI
             services.AddScoped<IEditJobViewModel, EditJobViewModel>();
             services.AddScoped<IProjectsViewModel, ProjectsViewModel>();
             services.AddScoped<IEditProjectViewModel, EditProjectViewModel>();
+            services.AddScoped<ICustomersViewModel, CustomersViewModel>();
+            services.AddScoped<IEditCustomerViewModel, EditCustomerViewModel>();
            
             //Http services
             services.AddSingleton<HttpClient>();

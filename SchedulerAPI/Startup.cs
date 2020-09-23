@@ -32,11 +32,9 @@ namespace SchedulerAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-#if DEBUG
+            // I currently have turned off my Azure subscription to save money. Sql connection will not work at this time.
             services.AddDbContext<SchedulerContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("debugConnection")));
-#else
-             services.AddDbContext<SchedulerContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("sqlConnection")));
-#endif
+            //services.AddDbContext<SchedulerContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("sqlConnection")));
 
             services.AddControllers().AddNewtonsoftJson();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -15,9 +15,7 @@ namespace SchedulerUI.ViewModels.Projects
     {
 
         #region Fields
-        private readonly IUserService _userService;
         private readonly IProjectService _projectService;
-        private readonly NavigationManager _navigation;
         private int _currentProjectId;
         #endregion
 
@@ -27,7 +25,8 @@ namespace SchedulerUI.ViewModels.Projects
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public int TotalPageQuantity { get; set; }
-        public int CurrentPage { get; set; }      
+        public int CurrentPage { get; set; } 
+        public int PageSize { get; set; }
         public bool DeleteDialogIsOpen { get; set; }
         #endregion
 

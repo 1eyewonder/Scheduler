@@ -1,36 +1,4 @@
-﻿
-@*<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href=""> Symbiotic Scheduling</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <AuthorizeView>       
-            <Authorized>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="jobs">
-                        <span class="oi oi-cart" aria-hidden="true"></span> Jobs
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="projects">
-                        <span class="oi oi-cog" aria-hidden="true"></span> Projects
-                    </NavLink>
-                </li>
-            </Authorized>           
-        </AuthorizeView>       
-    </ul>
-</div>*@
-
-<MatNavMenu>
+﻿<MatNavMenu>
     <MatNavItem Class="top-row pl-4 navbar navbar-dark" Style="color:white">Symbiotic Scheduling</MatNavItem>
     <MatNavItem Href="" Style="color:white; align-self:end">
         <MatIcon Icon="home"></MatIcon>&nbsp; Home
@@ -40,6 +8,9 @@
     </MatNavItem>
     <MatNavItem Href="projects" Style="color:white">
         <MatIcon Icon="work_outline"></MatIcon>&nbsp; Projects
+    </MatNavItem>
+    <MatNavItem Href="customers" Style="color:white">
+        <MatIcon Icon="people_outline"></MatIcon>&nbsp; Customers
     </MatNavItem>
 </MatNavMenu>
 

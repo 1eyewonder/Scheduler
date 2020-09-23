@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using SchedulerAPI.Dtos;
 using SchedulerAPI.Models;
 using SchedulerUI.Services.Interfaces;
 using SchedulerUI.ViewModels.Interfaces;
@@ -10,61 +9,42 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace SchedulerUI.ViewModels.Projects
+namespace SchedulerUI.ViewModels.Customers
 {
-    public class EditProjectViewModel: IEditProjectViewModel
+    public class EditCustomerViewModel : IEditCustomerViewModel
     {
         #region Fields
-        private readonly IProjectService _projectService;
-        private readonly IMapper _mapper;
-        private readonly IProjectsViewModel _projectsViewModel;
         private readonly ICustomerService _customerService;
+        private readonly ICustomersViewModel _customersViewModel;
         #endregion
 
         #region Properties
-        public ProjectDto ProjectDto { get; set; }
-        public Project Project { get; set; }
-        public List<Customer> Customers { get; set; }
-        public Task Initialization { get; private set; }
+        public Customer Customer { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public bool EditDialogIsOpen { get; set; }
+
         #endregion
 
-        public EditProjectViewModel(IProjectService projectService, 
-            IMapper mapper, 
-            IProjectsViewModel projectsViewModel,
-            ICustomerService customerService)
+        public EditCustomerViewModel(ICustomerService customerService,
+            ICustomersViewModel customersViewModel)
         {
-            //Inject services
-            _projectService = projectService;
             _customerService = customerService;
-            _mapper = mapper;
-            _projectsViewModel = projectsViewModel;     
+            _customersViewModel = customersViewModel;
 
-            //Initialize objects
-            Project = new Project();
-            ProjectDto = new ProjectDto();
-            Customers = new List<Customer>();
+            //Initialize
+            Customer = new Customer();
             IsRunning = false;
             ErrorMessage = null;
             EditDialogIsOpen = false;
-
-            //Retrieves data async
-            Initialization = InitializeAsync();
         }
 
-        public async Task InitializeAsync()
+        public void OpenEditDialog(Customer customer)
         {
-            //Get customers
-            var response = await _customerService.GetCustomers();
-            Customers = response.Items;
-        }
-        public void OpenEditDialog(Project project)
-        {
-            _mapper.Map(project, ProjectDto);
+            Customer = customer;
             EditDialogIsOpen = true;
         }
+
         public async Task SaveChanges()
         {
             //Disables actions and clears any error messages
@@ -74,13 +54,13 @@ namespace SchedulerUI.ViewModels.Projects
             try
             {
                 //Attempts to update job in the database
-                var response = await _projectService.UpdateProject(ProjectDto);
+                var response = await _customerService.UpdateCustomer(Customer);
 
                 //If http call was successful
                 if (response.IsSuccessStatusCode)
                 {
                     EditDialogIsOpen = false;
-                    await _projectsViewModel.Refresh();
+                    await _customersViewModel.Refresh();
                 }
 
                 //If http call was not successful

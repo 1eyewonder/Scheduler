@@ -43,7 +43,7 @@ namespace SchedulerUI.ViewModels.Jobs
             _mapper = mapper;
             _jobsViewModel = jobsViewModel;
 
-            //Initialize objects
+            //Initialize
             Job = new Job();
             JobDto = new JobDto();
             Projects = new List<Project>();

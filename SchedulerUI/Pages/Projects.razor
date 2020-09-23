@@ -9,7 +9,6 @@
 <style>
     .mdc-table {
         width: 100%;
-        height: auto;
     }
 
         .mdc-table th, .mdc-table td {
@@ -22,6 +21,8 @@
 
     .mdc-dialog .mdc-dialog__surface {
         max-width: none;
+        width:auto;
+        height:auto;
         padding: 2% 10%;
     }
     .row {
@@ -100,10 +101,11 @@ else
                     }
                 </MatSelect>
 
-                <MatButton Type="Primary">Save Changes</MatButton>
-            </EditForm>
-
-            <MatButton @onclick="@EditProjectViewModel.Cancel"> Cancel</MatButton>
+                <div class="row">
+                    <MatButton Type="Primary">Save Changes</MatButton>
+                    <MatButton @onclick="@EditProjectViewModel.Cancel"> Cancel</MatButton>
+                </div>                
+            </EditForm>              
         </MatDialogContent>
     </MatDialog>
     #endregion
@@ -123,6 +125,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await ProjectsViewModel.Initialization;
+        await EditProjectViewModel.Initialization;  
     }
 
     private async Task AddProject()

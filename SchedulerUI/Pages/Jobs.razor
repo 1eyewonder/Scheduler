@@ -135,10 +135,11 @@ else
                     }
                 </MatSelect>
 
-                <MatButton Type="Primary">Save Changes</MatButton>
-            </EditForm>
-
-            <MatButton @onclick="@EditJobViewModel.Cancel"> Cancel</MatButton>
+                <div class="row">
+                    <MatButton Type="Primary">Save Changes</MatButton>
+                    <MatButton @onclick="@EditJobViewModel.Cancel"> Cancel</MatButton>
+                </div>            
+            </EditForm>          
         </MatDialogContent>
     </MatDialog>
     #endregion

@@ -1,0 +1,125 @@
+﻿@page "/customers"
+
+@inject ICustomersViewModel CustomersViewModel
+@inject IEditCustomerViewModel EditCustomerViewModel
+@inject IMatToaster Toaster
+
+@attribute [Authorize]
+
+<style>
+    .mdc-table {
+        width: 100%;
+        height: auto;
+    }
+
+        .mdc-table th, .mdc-table td {
+            text-align: center;
+            width: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .mdc-dialog .mdc-dialog__surface {
+        max-width: none;
+        height: auto;
+        padding: 2% 10%;
+    }
+
+    .row {
+        margin-left: 0;
+    }
+</style>
+
+<MatH2>Customers</MatH2>
+
+@if (CustomersViewModel.ErrorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        <MatBody2>@CustomersViewModel.ErrorMessage</MatBody2>
+    </div>
+}
+
+<div class="row">
+    <MatButton Outlined="true" OnClick="AddCustomer">Add Customer</MatButton>
+    <MatButton Outlined="true" OnClick="CustomersViewModel.Refresh">Refresh</MatButton>
+</div>
+
+@if (CustomersViewModel.IsRunning == true)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MatTable Items="CustomersViewModel.CustomersList" Striped="true" PageSize="10" ShowPaging="false">
+        <MatTableHeader>
+            <th>Name</th>
+            <th>Edit Project</th>
+            <AuthorizeView Roles="2">
+                <Authorized>
+                    <th>Delete Project</th>
+                </Authorized>
+            </AuthorizeView>
+        </MatTableHeader>
+
+        <MatTableRow>
+            @{var customer = context;}
+            <td>@customer.Name</td>
+            <td>
+                <MatButton OnClick="() =>EditCustomerViewModel.OpenEditDialog(customer)">Edit</MatButton>
+            </td>
+            <td>
+                <MatButton OnClick="() => CustomersViewModel.OpenDeleteDialog(customer.Id)">Delete</MatButton>
+            </td>
+        </MatTableRow>
+
+    </MatTable>
+
+    <Pagination TotaPagesQuantity="CustomersViewModel.TotalPageQuantity" CurrentPage="CustomersViewModel.CurrentPage" Radius="2"
+                SelectedPage="CustomersViewModel.SelectedPage"></Pagination>
+
+    #region EditCustomerModal
+    <MatDialog @bind-IsOpen="EditCustomerViewModel.EditDialogIsOpen">
+        <MatDialogTitle>Edit Customer</MatDialogTitle>
+        <MatDialogContent>
+            <EditForm Model="@EditCustomerViewModel.Customer" OnValidSubmit="@EditCustomerViewModel.SaveChanges">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <MatTextField Outlined="true" @bind-Value="EditCustomerViewModel.Customer.Name" Label="Customer Name" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                
+                <div class="row">
+                    <MatButton Type="Primary">Save Changes</MatButton>
+                    <MatButton @onclick="@EditCustomerViewModel.Cancel"> Cancel</MatButton>
+                </div>       
+            </EditForm>        
+        </MatDialogContent>
+    </MatDialog>
+    #endregion
+
+    #region DeleteCustomerModal
+    <MatDialog @bind-IsOpen="CustomersViewModel.DeleteDialogIsOpen">
+        <MatDialogTitle>Confirm Delete</MatDialogTitle>
+        <MatBody2>Are you sure you would like to delete this customer?</MatBody2>
+        <MatButton OnClick="CustomersViewModel.DeleteEntity">Confirm</MatButton>
+        <MatButton OnClick="CustomersViewModel.CancelDelete">Cancel</MatButton>
+    </MatDialog>
+    #endregion
+    
+}
+
+
+@code {
+    int totalPages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CustomersViewModel.Initialization;
+    }
+
+    private async Task AddCustomer()
+    {
+        await CustomersViewModel.AddEntity();
+        Toaster.Add("New customer added successfully", MatToastType.Success, "Add Customer");
+    }
+}

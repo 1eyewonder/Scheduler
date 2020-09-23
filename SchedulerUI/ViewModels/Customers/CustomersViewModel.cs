@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Newtonsoft.Json;
-using SchedulerAPI.Dtos;
-using SchedulerAPI.Models;
-using SchedulerUI.Pages;
+﻿using SchedulerAPI.Models;
 using SchedulerUI.Services.Interfaces;
 using SchedulerUI.ViewModels.Interfaces;
 using System;
@@ -12,38 +8,37 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace SchedulerUI.ViewModels.Jobs
+namespace SchedulerUI.ViewModels.Customers
 {
-    public sealed class JobsViewModel : IJobsViewModel
+    public class CustomersViewModel: ICustomersViewModel
     {
-
         #region Fields
-        private readonly IJobService _jobService;
-        private int _currentJobId;
+        private readonly ICustomerService _customerService;
+        private int _currentCustomerId;
         #endregion
 
         #region Properties
-        public List<Job> JobList { get; set; }
+        public List<Customer> CustomersList { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public Task Initialization { get; private set; }
         public int TotalPageQuantity { get; set; }
-        public int CurrentPage { get; set; }
         public int PageSize { get; set; }
-        public string NewJobNumber { get; set; }
+        public int CurrentPage { get; set; }
         public bool DeleteDialogIsOpen { get; set; }
         #endregion
 
-        public JobsViewModel(IJobService jobService)
+        public CustomersViewModel(ICustomerService customerService)
         {
-            //Injects services
-            _jobService = jobService;
+            // Inject services
+            _customerService = customerService;
 
-            //Initialize
-            JobList = new List<Job>();
+            // Initialize
+            CustomersList = new List<Customer>();
             ErrorMessage = null;
             IsRunning = false;
             CurrentPage = 1;
+            PageSize = 10;
 
             //Retrieves data async
             Initialization = InitializeAsync();
@@ -62,7 +57,7 @@ namespace SchedulerUI.ViewModels.Jobs
             //Get jobs from database
             try
             {
-                JobList = await GetJobs();
+                CustomersList = await GetCustomers();
             }
             catch (Exception e)
             {
@@ -76,16 +71,12 @@ namespace SchedulerUI.ViewModels.Jobs
         public async Task SelectedPage(int page)
         {
             CurrentPage = page;
-            JobList = await GetJobs(10, page);
+            CustomersList = await GetCustomers(10, page);
         }
 
-        /// <summary>
-        /// Gets list of jobs from the database
-        /// </summary>
-        /// <returns></returns>
-        private async Task<List<Job>> GetJobs(int recordsPerPage = 10, int pageNumber = 1)
+        private async Task<List<Customer>> GetCustomers(int recordsPerPage = 10, int pageNumber = 1)
         {
-            var response = await _jobService.GetJobs(recordsPerPage, pageNumber);
+            var response = await _customerService.GetCustomers(recordsPerPage, pageNumber);
             TotalPageQuantity = response.TotalPagesQuantity;
             return response.Items;
         }
@@ -99,12 +90,12 @@ namespace SchedulerUI.ViewModels.Jobs
             //Get jobs from database
             try
             {
-                JobList = await GetJobs(10, CurrentPage);
+                CustomersList = await GetCustomers(10, CurrentPage);
             }
             catch (Exception e)
             {
                 ErrorMessage = e.ToString();
-            }            
+            }
 
             //Re-enables actions
             IsRunning = false;
@@ -121,18 +112,16 @@ namespace SchedulerUI.ViewModels.Jobs
             ErrorMessage = null;
 
             // Creates new random quote number
-            var job = new JobDto()
+            var customer = new Customer()
             {
                 // Creates random 8 digit number until logic is added later
-                QuoteNumber = new Random().Next(10000000, 99999999).ToString()
+                Name = "Customer " + new Random().Next(0, 999).ToString()
             };
-
-            NewJobNumber = job.QuoteNumber;
 
             // Adds job to database
             try
-            {               
-                var response = await _jobService.AddJob(job);
+            {
+                var response = await _customerService.AddCustomer(customer);
 
                 // If post is successful
                 if (response.IsSuccessStatusCode)
@@ -143,7 +132,7 @@ namespace SchedulerUI.ViewModels.Jobs
                 {
                     ErrorMessage = response.ReasonPhrase;
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -157,7 +146,7 @@ namespace SchedulerUI.ViewModels.Jobs
         public void OpenDeleteDialog(int entityId)
         {
             DeleteDialogIsOpen = true;
-            _currentJobId = entityId;
+            _currentCustomerId = entityId;
         }
 
         /// <summary>
@@ -173,7 +162,7 @@ namespace SchedulerUI.ViewModels.Jobs
             try
             {
                 //Attempts to update job in the database
-                var response = await _jobService.DeleteJob(_currentJobId);
+                var response = await _customerService.DeleteCustomer(_currentCustomerId);
 
                 //If http call was successful
                 if (response.IsSuccessStatusCode)
@@ -205,6 +194,5 @@ namespace SchedulerUI.ViewModels.Jobs
             ErrorMessage = null;
             DeleteDialogIsOpen = false;
         }
-
     }
 }

@@ -9,6 +9,7 @@ namespace SchedulerUI.ViewModels.Interfaces
     {
         int TotalPageQuantity { get; set; }
         int CurrentPage { get; set; }
+        int PageSize { get; set; }
 
         Task SelectedPage(int page);
     }
