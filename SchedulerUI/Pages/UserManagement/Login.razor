@@ -7,6 +7,7 @@
         justify-content:center;
         width: auto;
         margin: 5% 30%;
+        border:none;
     }
 
     .mat-h2{
@@ -18,7 +19,14 @@
         text-align: center;
         margin-bottom: 5%
     }
-    
+
+    .mdc-text-field {
+        width: 100%;
+    }
+
+    .row {
+        margin: 10px 0;
+    }
 </style>
 
 
@@ -39,16 +47,24 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <ValidationMessage For="@(() => vm.UserLogin.Name)" />
-            <MatTextField Outlined="true" @bind-Value="vm.UserLogin.Name" Label="Username" ValidationDisabled="true" FullWidth="true"></MatTextField>
-
-            <ValidationMessage For="@(() => vm.UserLogin.Password)" />
-            <MatTextField Outlined="true" @bind-Value="vm.UserLogin.Password" Label="Password" ValidationDisabled="true" FullWidth="true" Type="password"></MatTextField>
-
-            <div style="text-align:center;">
-                <MatButton Type="Primary" Disabled="vm.IsRunning" Outlined="true">Login</MatButton>
+            
+            <div class="row">
+                <ValidationMessage For="@(() => vm.UserLogin.Name)" />
+            </div>
+            <div class="row">
+                <MatTextField Outlined="true" @bind-Value="vm.UserLogin.Name" Label="Username" ValidationDisabled="true"></MatTextField>
+            </div>
+            <div class="row">
+                <ValidationMessage For="@(() => vm.UserLogin.Password)" />
+            </div>
+            <div class="row">
+                <MatTextField Outlined="true" @bind-Value="vm.UserLogin.Password" Label="Password" ValidationDisabled="true" Type="password"></MatTextField>
             </div>
             
+            <div style="text-align:center;">
+                <MatButton Type="Primary" Disabled="vm.IsRunning" Outlined="true">Log In</MatButton>
+            </div>
+
         </EditForm>
     </div>
 </div>

@@ -67,53 +67,10 @@ namespace SchedulerUI.ViewModels.Projects
         private async Task<List<Project>> GetProjects(int recordsPerPage = 10, int pageNumber = 1)
         {
             var response = await _projectService.GetProjects(recordsPerPage, pageNumber);
+            TotalPageQuantity = response.TotalPagesQuantity;
             return response.Items;
         }
-
-        /// <summary>
-        /// Adds a project to the database
-        /// </summary>
-        /// <returns></returns>
-        public async Task AddEntity()
-        {
-            //Disables actions and clears any error messages
-            IsRunning = true;
-            ErrorMessage = null;
-
-            // Creates new random quote number
-            var project = new ProjectDto()
-            {
-                // Creates random 8 digit number until logic is added later
-                Name = "NewProject",
-                Number = new Random().Next(10000, 99999).ToString(),
-                CustomerId = 1
-            };
-
-            // Adds job to database
-            try
-            {
-                var response = await _projectService.AddProject(project);
-
-                // If post is successful
-                if (response.IsSuccessStatusCode)
-                {
-                    await Refresh();
-                }
-                else
-                {
-                    ErrorMessage = response.ReasonPhrase;
-                }
-
-            }
-            catch (Exception e)
-            {
-                ErrorMessage = e.ToString();
-            }
-
-            //Re-enables actions
-            IsRunning = false;
-        }
-
+      
         public async Task Refresh()
         {
             //Disables actions and clears any error messages

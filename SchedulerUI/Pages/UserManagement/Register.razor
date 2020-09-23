@@ -7,6 +7,7 @@
             justify-content: center;
             width: auto;
             margin: 5% 30%;
+            border:none;
         }
 
         .mat-h2 {
@@ -21,6 +22,14 @@
         .mat-button{
             width:20%;
             margin: 2% 40%;
+        }
+
+        .mdc-text-field {
+            width: 100%;
+        }
+
+        .row {
+            margin: 10px 0;
         }
     </style>
 
@@ -40,19 +49,37 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <ValidationMessage For="@(() => vm.User.Name)" />
-            <MatTextField Outlined="true" @bind-Value="vm.User.Name" Label="Username" ValidationDisabled="true" FullWidth="true"></MatTextField>
+            <div class="row">
+                <ValidationMessage For="@(() => vm.User.Name)" />
+            </div>
+            <div class="row">
+                <MatTextField Outlined="true" @bind-Value="vm.User.Name" Label="Username" ValidationDisabled="true"></MatTextField>
+            </div>
 
-            <ValidationMessage For="@(() => vm.User.Email)" />
-            <MatTextField Outlined="true" @bind-Value="vm.User.Email" Label="Email" ValidationDisabled="true" FullWidth="true"></MatTextField>
+            <div class="row">
+                <ValidationMessage For="@(() => vm.User.Email)" />
+            </div>
+            <div class="row">
+                <MatTextField Outlined="true" @bind-Value="vm.User.Email" Label="Email" ValidationDisabled="true"></MatTextField>
+            </div>
 
-            <ValidationMessage For="@(() => vm.User.Password)" />
-            <MatTextField Outlined="true" @bind-Value="vm.User.Password" Label="Password" ValidationDisabled="true" Type="password" FullWidth="true"></MatTextField>
+            <div class="row">
+                <ValidationMessage For="@(() => vm.User.Password)" />
+            </div>
+            <div class="row">
+                <MatTextField Outlined="true" @bind-Value="vm.User.Password" Label="Password" ValidationDisabled="true" Type="password"></MatTextField>
+            </div>
 
-            <ValidationMessage For="@(() => vm.ConfirmPassword)" />
-            <MatTextField Outlined="true" @bind-Value="vm.ConfirmPassword" Label="Confirm Password" ValidationDisabled="true" Type="password" FullWidth="true"></MatTextField>
+            <div class="row">
+                <ValidationMessage For="@(() => vm.ConfirmPassword)" />
+            </div>
+            <div class="row">
+                <MatTextField Outlined="true" @bind-Value="vm.ConfirmPassword" Label="Confirm Password" ValidationDisabled="true" Type="password"></MatTextField>
+            </div>           
 
-            <MatButton Type="submit" Disabled="vm.IsRunning">Submit</MatButton>
+            <div style="text-align:center;">
+                <MatButton Type="submit" Disabled="vm.IsRunning" Outlined="true">Submit</MatButton>
+            </div>
             
         </EditForm>
     </div>

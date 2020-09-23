@@ -8,12 +8,6 @@ namespace SchedulerUI.ViewModels.Interfaces
     public interface IEntityManagement
     {
         /// <summary>
-        /// Adds a new entry to the given entity table
-        /// </summary>
-        /// <returns></returns>
-        Task AddEntity();
-
-        /// <summary>
         /// Refreshes the data source of the entity table
         /// </summary>
         /// <returns></returns>

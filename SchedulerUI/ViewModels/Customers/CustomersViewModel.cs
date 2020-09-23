@@ -101,48 +101,6 @@ namespace SchedulerUI.ViewModels.Customers
             IsRunning = false;
         }
 
-        /// <summary>
-        /// Adds a job to the database
-        /// </summary>
-        /// <returns></returns>
-        public async Task AddEntity()
-        {
-            //Disables actions and clears any error messages
-            IsRunning = true;
-            ErrorMessage = null;
-
-            // Creates new random quote number
-            var customer = new Customer()
-            {
-                // Creates random 8 digit number until logic is added later
-                Name = "Customer " + new Random().Next(0, 999).ToString()
-            };
-
-            // Adds job to database
-            try
-            {
-                var response = await _customerService.AddCustomer(customer);
-
-                // If post is successful
-                if (response.IsSuccessStatusCode)
-                {
-                    await Refresh();
-                }
-                else
-                {
-                    ErrorMessage = response.ReasonPhrase;
-                }
-
-            }
-            catch (Exception e)
-            {
-                ErrorMessage = e.ToString();
-            }
-
-            //Re-enables actions
-            IsRunning = false;
-        }
-
         public void OpenDeleteDialog(int entityId)
         {
             DeleteDialogIsOpen = true;
@@ -193,6 +151,11 @@ namespace SchedulerUI.ViewModels.Customers
             IsRunning = false;
             ErrorMessage = null;
             DeleteDialogIsOpen = false;
+        }
+
+        public Task AddEntity()
+        {
+            throw new NotImplementedException();
         }
     }
 }

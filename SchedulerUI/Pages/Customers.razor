@@ -12,13 +12,13 @@
         height: auto;
     }
 
-        .mdc-table th, .mdc-table td {
-            text-align: center;
-            width: auto;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .mdc-table th, .mdc-table td {
+        text-align: center;
+        width: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
     .mdc-dialog .mdc-dialog__surface {
         max-width: none;
@@ -27,7 +27,19 @@
     }
 
     .row {
-        margin-left: 0;
+        margin: 10px 0;
+    }
+
+    .mdc-select {
+        width: 100%;
+    }
+
+    .mdc-text-field {
+        width: 100%;
+    }
+
+    .mdc-dialog__title {
+        text-align: center;
     }
 </style>
 
@@ -41,7 +53,7 @@
 }
 
 <div class="row">
-    <MatButton Outlined="true" OnClick="AddCustomer">Add Customer</MatButton>
+    <MatButton Outlined="true" OnClick="EditCustomerViewModel.OpenNewDialog">Add Customer</MatButton>
     <MatButton Outlined="true" OnClick="CustomersViewModel.Refresh">Refresh</MatButton>
 </div>
 
@@ -54,10 +66,10 @@ else
     <MatTable Items="CustomersViewModel.CustomersList" Striped="true" PageSize="10" ShowPaging="false">
         <MatTableHeader>
             <th>Name</th>
-            <th>Edit Project</th>
+            <th>Edit Customer</th>
             <AuthorizeView Roles="2">
                 <Authorized>
-                    <th>Delete Project</th>
+                    <th>Delete Customer</th>
                 </Authorized>
             </AuthorizeView>
         </MatTableHeader>
@@ -78,6 +90,27 @@ else
     <Pagination TotaPagesQuantity="CustomersViewModel.TotalPageQuantity" CurrentPage="CustomersViewModel.CurrentPage" Radius="2"
                 SelectedPage="CustomersViewModel.SelectedPage"></Pagination>
 
+    #region NewCustomerModal
+    <MatDialog @bind-IsOpen="EditCustomerViewModel.NewDialogIsOpen">
+        <MatDialogTitle>New Customer</MatDialogTitle>
+        <MatDialogContent>
+            <EditForm Model="@EditCustomerViewModel.Customer" OnValidSubmit="@AddCustomer">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row">
+                    <MatTextField Outlined="true" @bind-Value="EditCustomerViewModel.Customer.Name" Label="Customer Name" ValidationDisabled="true"></MatTextField>
+                </div>          
+
+                <div class="row">
+                    <MatButton Type="Primary">Add Customer</MatButton>
+                    <MatButton @onclick="@EditCustomerViewModel.Cancel"> Cancel</MatButton>
+                </div>
+            </EditForm>
+        </MatDialogContent>
+    </MatDialog>
+    #endregion
+
     #region EditCustomerModal
     <MatDialog @bind-IsOpen="EditCustomerViewModel.EditDialogIsOpen">
         <MatDialogTitle>Edit Customer</MatDialogTitle>
@@ -86,13 +119,15 @@ else
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
-                <MatTextField Outlined="true" @bind-Value="EditCustomerViewModel.Customer.Name" Label="Customer Name" ValidationDisabled="true" FullWidth="true"></MatTextField>
-                
+                <div class="row">
+                    <MatTextField Outlined="true" @bind-Value="EditCustomerViewModel.Customer.Name" Label="Customer Name" ValidationDisabled="true"></MatTextField>
+                </div>                
+
                 <div class="row">
                     <MatButton Type="Primary">Save Changes</MatButton>
                     <MatButton @onclick="@EditCustomerViewModel.Cancel"> Cancel</MatButton>
-                </div>       
-            </EditForm>        
+                </div>
+            </EditForm>
         </MatDialogContent>
     </MatDialog>
     #endregion
@@ -105,7 +140,7 @@ else
         <MatButton OnClick="CustomersViewModel.CancelDelete">Cancel</MatButton>
     </MatDialog>
     #endregion
-    
+
 }
 
 
@@ -119,7 +154,13 @@ else
 
     private async Task AddCustomer()
     {
-        await CustomersViewModel.AddEntity();
-        Toaster.Add("New customer added successfully", MatToastType.Success, "Add Customer");
+        // Attempts to add customer to database
+        bool success = await EditCustomerViewModel.SaveNewEntity();
+
+        // Displays toast notification if successful
+        if (success == true)
+        {
+            Toaster.Add("New customer added successfully", MatToastType.Success, "Add Customer");
+        }
     }
 }

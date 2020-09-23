@@ -110,50 +110,6 @@ namespace SchedulerUI.ViewModels.Jobs
             IsRunning = false;
         }
 
-        /// <summary>
-        /// Adds a job to the database
-        /// </summary>
-        /// <returns></returns>
-        public async Task AddEntity()
-        {
-            //Disables actions and clears any error messages
-            IsRunning = true;
-            ErrorMessage = null;
-
-            // Creates new random quote number
-            var job = new JobDto()
-            {
-                // Creates random 8 digit number until logic is added later
-                QuoteNumber = new Random().Next(10000000, 99999999).ToString()
-            };
-
-            NewJobNumber = job.QuoteNumber;
-
-            // Adds job to database
-            try
-            {               
-                var response = await _jobService.AddJob(job);
-
-                // If post is successful
-                if (response.IsSuccessStatusCode)
-                {
-                    await Refresh();
-                }
-                else
-                {
-                    ErrorMessage = response.ReasonPhrase;
-                }
-                
-            }
-            catch (Exception e)
-            {
-                ErrorMessage = e.ToString();
-            }
-
-            //Re-enables actions
-            IsRunning = false;
-        }
-
         public void OpenDeleteDialog(int entityId)
         {
             DeleteDialogIsOpen = true;
@@ -205,6 +161,5 @@ namespace SchedulerUI.ViewModels.Jobs
             ErrorMessage = null;
             DeleteDialogIsOpen = false;
         }
-
     }
 }

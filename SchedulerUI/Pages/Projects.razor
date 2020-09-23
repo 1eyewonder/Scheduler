@@ -11,22 +11,34 @@
         width: 100%;
     }
 
-        .mdc-table th, .mdc-table td {
-            text-align: center;
-            width: auto;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .mdc-table th, .mdc-table td {
+        text-align: center;
+        width: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
     .mdc-dialog .mdc-dialog__surface {
         max-width: none;
-        width:auto;
-        height:auto;
-        padding: 2% 10%;
+        width: auto;
+        padding: 5% 15%;
     }
+
     .row {
-        margin-left: 0;
+        margin: 10px 0;
+    }
+
+    .mdc-select {
+        width: 100%;
+    }
+
+    .mdc-text-field{
+        width:100%;
+    }
+
+    .mdc-dialog__title{
+        text-align:center;
     }
 </style>
 
@@ -40,7 +52,7 @@
 }
 
 <div class="row">
-    <MatButton Outlined="true" OnClick="AddProject">Add Project</MatButton>
+    <MatButton Outlined="true" OnClick="EditProjectViewModel.OpenNewDialog">Add Project</MatButton>
     <MatButton Outlined="true" OnClick="ProjectsViewModel.Refresh">Refresh</MatButton>
 </div>
 
@@ -81,6 +93,43 @@ else
     <Pagination TotaPagesQuantity="ProjectsViewModel.TotalPageQuantity" CurrentPage="ProjectsViewModel.CurrentPage" Radius="2"
                 SelectedPage="ProjectsViewModel.SelectedPage"></Pagination>
 
+    #region NewProjectModal
+    <MatDialog @bind-IsOpen="EditProjectViewModel.NewDialogIsOpen">
+        <MatDialogTitle>New Project</MatDialogTitle>
+        <MatDialogContent>
+            <EditForm Model="@EditProjectViewModel.ProjectDto">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row">
+                    <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Name" Label="Project Name" ValidationDisabled="true"></MatTextField>
+                </div>
+
+                <div class="row">
+                    <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Number" Label="Project Number" ValidationDisabled="true"></MatTextField>
+                </div>
+
+                <div class="row">
+                    <MatSelect Class="in-modal" Label="Select a Customer" @bind-Value="EditProjectViewModel.ProjectDto.CustomerId" ValidationDisabled="true">
+                        @{
+                                var uniqueCustomers = EditProjectViewModel.Customers.Select(n => new { n.Name, n.Id }).Distinct().ToList();
+                                foreach (var customer in uniqueCustomers)
+                                {
+                                <MatOption TValue="int?" Value="@customer.Id">@customer.Name</MatOption>
+                                }
+                        }
+                    </MatSelect>
+                </div>
+
+                <div class="row">
+                    <MatButton Type="Primary" OnClick="AddProject">Save Changes</MatButton>
+                    <MatButton @onclick="@EditProjectViewModel.Cancel"> Cancel</MatButton>
+                </div>
+            </EditForm>
+        </MatDialogContent>
+    </MatDialog>
+    #endregion
+
     #region EditProjectModal
     <MatDialog @bind-IsOpen="EditProjectViewModel.EditDialogIsOpen">
         <MatDialogTitle>Edit Project</MatDialogTitle>
@@ -89,23 +138,31 @@ else
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
-                <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Name" Label="Project Name" ValidationDisabled="true" FullWidth="true"></MatTextField>
-                <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Number" Label="Project Number" ValidationDisabled="true" FullWidth="true"></MatTextField>
-                <MatSelect Class="in-modal" Label="Select a Customer" @bind-Value="EditProjectViewModel.ProjectDto.CustomerId" ValidationDisabled="true">
-                    @{
-                            var uniqueCustomers = EditProjectViewModel.Customers.Select(n => new { n.Name, n.Id }).Distinct().ToList();
-                            foreach (var customer in uniqueCustomers)
-                            {
-                            <MatOption TValue="int?" Value="@customer.Id">@customer.Name</MatOption>
-                            }
-                    }
-                </MatSelect>
+                <div class="row">
+                    <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Name" Label="Project Name" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                </div>
 
+                <div class="row">
+                    <MatTextField Outlined="true" @bind-Value="EditProjectViewModel.ProjectDto.Number" Label="Project Number" ValidationDisabled="true" FullWidth="true"></MatTextField>
+                </div>
+
+                <div class="row">
+                    <MatSelect Class="in-modal" Label="Select a Customer" @bind-Value="EditProjectViewModel.ProjectDto.CustomerId" ValidationDisabled="true">
+                        @{
+                                var uniqueCustomers = EditProjectViewModel.Customers.Select(n => new { n.Name, n.Id }).Distinct().ToList();
+                                foreach (var customer in uniqueCustomers)
+                                {
+                                <MatOption TValue="int?" Value="@customer.Id">@customer.Name</MatOption>
+                                }
+                        }
+                    </MatSelect>
+                </div>
+ 
                 <div class="row">
                     <MatButton Type="Primary">Save Changes</MatButton>
                     <MatButton @onclick="@EditProjectViewModel.Cancel"> Cancel</MatButton>
-                </div>                
-            </EditForm>              
+                </div>
+            </EditForm>
         </MatDialogContent>
     </MatDialog>
     #endregion
@@ -113,7 +170,7 @@ else
     #region DeleteProjectModal
     <MatDialog @bind-IsOpen="ProjectsViewModel.DeleteDialogIsOpen">
         <MatDialogTitle>Confirm Delete</MatDialogTitle>
-        <MatBody2>Are you sure you would like to delete this job?</MatBody2>
+        <MatBody2>Are you sure you would like to delete this project?</MatBody2>
         <MatButton OnClick="ProjectsViewModel.DeleteEntity">Confirm</MatButton>
         <MatButton OnClick="ProjectsViewModel.CancelDelete">Cancel</MatButton>
     </MatDialog>
@@ -125,12 +182,18 @@ else
     protected override async Task OnInitializedAsync()
     {
         await ProjectsViewModel.Initialization;
-        await EditProjectViewModel.Initialization;  
+        await EditProjectViewModel.Initialization;
     }
 
     private async Task AddProject()
     {
-        await ProjectsViewModel.AddEntity();
-        Toaster.Add("New project added successfully", MatToastType.Success, "Add Project");
+        // Attempts to add project to database
+        bool success = await EditProjectViewModel.SaveNewEntity();
+
+        // Displays toast notification if successful
+        if (success == true)
+        {
+            Toaster.Add("New project added successfully", MatToastType.Success, "Add Project");
+        }
     }
 }

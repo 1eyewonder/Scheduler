@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SchedulerUI.ViewModels.Interfaces
 {
-    public interface IEditCustomerViewModel : IViewModelState, IEditForm
+    public interface IEditCustomerViewModel : IViewModelState, IEditForm, INewForm
     {
         public Customer Customer { get; set; }
-        void OpenEditDialog(Customer customer);
+        void OpenEditDialog(Customer customer);     
     }
 }

@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 
 namespace SchedulerUI.ViewModels.Interfaces
 {
-    public interface IEditJobViewModel : IViewModelState, IEditForm
+    public interface IEditJobViewModel : IAsyncInitialization, IViewModelState, IEditForm, INewForm
     {
         public JobDto JobDto { get; set; }
         public Job Job { get; set; }
         public List<Project> Projects { get; set; }
-        Task OpenEditDialog(Job job);
+
+        /// <summary>
+        /// Opens modal to allow user to edit job
+        /// </summary>
+        /// <param name="job"></param>
+        void OpenEditDialog(Job job);
     }
 }

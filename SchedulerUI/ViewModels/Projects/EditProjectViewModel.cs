@@ -29,6 +29,7 @@ namespace SchedulerUI.ViewModels.Projects
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public bool EditDialogIsOpen { get; set; }
+        public bool NewDialogIsOpen { get; set; }
         #endregion
 
         public EditProjectViewModel(IProjectService projectService, 
@@ -65,6 +66,56 @@ namespace SchedulerUI.ViewModels.Projects
             _mapper.Map(project, ProjectDto);
             EditDialogIsOpen = true;
         }
+
+        public void OpenNewDialog()
+        {
+            ProjectDto = new ProjectDto()
+            {
+                Number = new Random().Next(10000, 99999).ToString()             
+            };
+            NewDialogIsOpen = true;
+        }
+        public async Task<bool> SaveNewEntity()
+        {
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
+
+            try
+            {
+                //Attempts to update job in the database
+                var response = await _projectService.AddProject(ProjectDto);
+
+                //If http call was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Closes modal and refreshes page
+                    NewDialogIsOpen = false;
+                    await _projectsViewModel.Refresh();
+
+                    // Re-enables actions and returns success
+                    IsRunning = false;
+                    return true;
+                }
+
+                //If http call was not successful
+                else
+                {
+                    ErrorMessage = response.Content.ReadAsAsync<HttpError>().Result.ToString();
+                }
+            }
+
+            //If other error occurred
+            catch (Exception e)
+            {
+                ErrorMessage = e.ToString();
+            }
+
+            // Re-enables actions and returns failure
+            IsRunning = false;
+            return false;
+        }
+
         public async Task SaveChanges()
         {
             //Disables actions and clears any error messages
@@ -105,6 +156,7 @@ namespace SchedulerUI.ViewModels.Projects
             IsRunning = false;
             ErrorMessage = null;
             EditDialogIsOpen = false;
+            NewDialogIsOpen = false;
         }
     }
 }

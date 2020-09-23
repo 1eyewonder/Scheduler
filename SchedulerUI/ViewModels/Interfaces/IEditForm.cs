@@ -14,7 +14,7 @@ namespace SchedulerUI.ViewModels.Interfaces
         Task SaveChanges();
 
         /// <summary>
-        /// Cancels editing of entity
+        /// Cancels editing or creation of entity
         /// </summary>
         /// <returns></returns>
         void Cancel();

@@ -23,7 +23,7 @@ namespace SchedulerUI.ViewModels.Customers
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
         public bool EditDialogIsOpen { get; set; }
-
+        public bool NewDialogIsOpen { get; set; }
         #endregion
 
         public EditCustomerViewModel(ICustomerService customerService,
@@ -43,6 +43,52 @@ namespace SchedulerUI.ViewModels.Customers
         {
             Customer = customer;
             EditDialogIsOpen = true;
+        }
+
+        public void OpenNewDialog()
+        {
+            Customer = new Customer();
+            NewDialogIsOpen = true;
+        }
+
+        public async Task<bool> SaveNewEntity()
+        {
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
+
+            try
+            {
+                //Attempts to update job in the database
+                var response = await _customerService.AddCustomer(Customer);
+
+                //If http call was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    NewDialogIsOpen = false;
+                    await _customersViewModel.Refresh();
+
+                    // Re-enables actions and returns success
+                    IsRunning = false;
+                    return true;
+                }
+
+                //If http call was not successful
+                else
+                {
+                    ErrorMessage = response.Content.ReadAsAsync<HttpError>().Result.ToString();
+                }
+            }
+
+            //If other error occurred
+            catch (Exception e)
+            {
+                ErrorMessage = e.ToString();
+            }
+
+            // Re-enables actions and returns failure
+            IsRunning = false;
+            return false;
         }
 
         public async Task SaveChanges()
@@ -85,6 +131,7 @@ namespace SchedulerUI.ViewModels.Customers
             IsRunning = false;
             ErrorMessage = null;
             EditDialogIsOpen = false;
+            NewDialogIsOpen = false;
         }
     }
 }

@@ -29,7 +29,9 @@ namespace SchedulerUI.ViewModels.Jobs
         public List<Project> Projects { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsRunning { get; set; }
+        public Task Initialization { get; private set; }
         public bool EditDialogIsOpen { get; set; }
+        public bool NewDialogIsOpen { get; set; }
         #endregion
 
         public EditJobViewModel(IJobService jobService, 
@@ -50,6 +52,9 @@ namespace SchedulerUI.ViewModels.Jobs
             IsRunning = false;
             ErrorMessage = null;
             EditDialogIsOpen = false;
+
+            // Retrieves data async
+            Initialization = InitializeAsync();
         }
 
         public async Task InitializeAsync()
@@ -57,14 +62,63 @@ namespace SchedulerUI.ViewModels.Jobs
             //Get projects
             var response = await _projectService.GetProjects();
             Projects = response.Items;
-            //StartingIndex = Projects.IndexOf(Projects.Where(p => p.Id == JobDto.ProjectId).FirstOrDefault());
         }
 
-       public async Task OpenEditDialog(Job job)
+       public void OpenEditDialog(Job job)
         {
-            await InitializeAsync();
             _mapper.Map(job, this.JobDto);
             EditDialogIsOpen = true;
+        }
+
+        public void OpenNewDialog()
+        {
+            JobDto = new JobDto()
+            {
+                // Creates random 8 digit number until logic is added later
+                QuoteNumber = new Random().Next(10000000, 99999999).ToString()
+            };
+            NewDialogIsOpen = true;
+        }
+
+        public async Task<bool> SaveNewEntity()
+        {
+            //Disables actions and clears any error messages
+            IsRunning = true;
+            ErrorMessage = null;
+
+            try
+            {
+                //Attempts to update job in the database
+                var response = await _jobService.AddJob(JobDto);
+
+                //If http call was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Closes modal and refreshes table
+                    NewDialogIsOpen = false;
+                    await _jobsViewModel.Refresh();
+
+                    // Re-enables actions and returns success
+                    IsRunning = false;
+                    return true;
+                }
+
+                //If http call was not successful
+                else
+                {
+                    ErrorMessage = response.Content.ReadAsAsync<HttpError>().Result.ToString();
+                }
+            }
+
+            //If other error occurred
+            catch (Exception e)
+            {
+                ErrorMessage = e.ToString();
+            }
+
+            // Re-enables actions and returns failure
+            IsRunning = false;
+            return false;
         }
 
         public async Task SaveChanges()
@@ -107,6 +161,7 @@ namespace SchedulerUI.ViewModels.Jobs
             IsRunning = false;
             ErrorMessage = null;
             EditDialogIsOpen = false;
+            NewDialogIsOpen = false;
         }
     }
 }
